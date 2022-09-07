@@ -1,5 +1,7 @@
 package com.example.hellopatent.service.impl;
 
+import com.example.hellopatent.dto.SearchRequestDto;
+import org.elasticsearch.action.search.SearchRequest;
 import com.example.hellopatent.config.EsProperties;
 import com.example.hellopatent.service.DocumentService;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +13,16 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 import static org.elasticsearch.xcontent.XContentFactory.jsonBuilder;
 
@@ -38,28 +45,47 @@ public class DocumentServiceImpl implements DocumentService {
     private static final String LEGAL_STATUS = "legal_status";
     private static final String SUMMARY = "summary";
 
-//    @Override
-//    public List<String> getSearch() throws IOException {
-//        SearchRequest searchRequest = new SearchRequest(esProperties.getPatentIndexName());
-//        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-//
-//        // 이름이 학생1, 학생22 인 도큐먼트를 찾는다.
-//        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-//        boolQueryBuilder
-//                .should(QueryBuilders.matchQuery(APPLICANT, "학생1"))
-//                .should(QueryBuilders.matchQuery(APPLICANT, "학생22"));
-//
-//        searchSourceBuilder.query(boolQueryBuilder);
-//        searchRequest.source(searchSourceBuilder);
-//
-//        SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
-//        return Optional.ofNullable(searchHits)
-//                .map(SearchHits::getHits)
-//                .map(v -> Arrays.stream(v)
-//                        .map(SearchHit::getSourceAsString)
-//                        .distinct()
-//                        .collect(Collectors.toList())
-//                ).orElse(Collections.emptyList());
+    @Override // 전체 조회
+    public List<Map<String,Object>> getSearch() throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest(esProperties.getPatentIndexName());
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.size(500);
+
+
+
+        searchRequest.source(searchSourceBuilder);
+        List<Map<String,Object>> list = new ArrayList<>();
+        SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
+        for(SearchHit hit : searchHits) {
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            list.add(sourceMap);
+        }
+        return list;
+
+    }
+
+    @Override // 필드별 조회
+    public List<Map<String,Object>> getCustom(SearchRequestDto requestDto) throws IOException {
+
+        SearchRequest searchRequest = new SearchRequest(esProperties.getPatentIndexName());
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+        boolQueryBuilder.should(QueryBuilders.wildcardQuery(requestDto.getType(), "*" + requestDto.getContent() + "*"));
+
+        searchSourceBuilder.size(500);
+
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
+        List<Map<String,Object>> list = new ArrayList<>();
+        SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
+        for(SearchHit hit : searchHits) {
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            list.add(sourceMap);
+        }
+        return list;
+
+    }
 
         // queryDSL 로 표현했을 때
         // GET /students/_search
@@ -110,7 +136,7 @@ public class DocumentServiceImpl implements DocumentService {
         return null;
     }
 
-    @Override
+    @Override //id 별 조회
     public Map<String, Object> getDocument(String id) throws IOException {
         GetRequest request = new GetRequest(esProperties.getPatentIndexName(), id);
         GetResponse getResponse = client.get(request, RequestOptions.DEFAULT);
@@ -120,6 +146,8 @@ public class DocumentServiceImpl implements DocumentService {
         }
         return null;
     }
+
+
 
 //    @Override
 //    public DeleteResponse deleteDocument(String id) throws IOException {

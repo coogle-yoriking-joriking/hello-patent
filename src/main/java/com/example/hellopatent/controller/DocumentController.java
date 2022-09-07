@@ -1,11 +1,13 @@
 package com.example.hellopatent.controller;
 
+import com.example.hellopatent.dto.SearchRequestDto;
 import com.example.hellopatent.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.index.IndexResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,10 +22,11 @@ public class DocumentController {
      * @return
      * @throws IOException
      */
-//    @GetMapping("/search")
-//    public List<String> getSearch() throws IOException {
-//        return documentService.getSearch();
-//    }
+
+    @GetMapping("/search")
+    public List<Map<String,Object>> getSearch() throws IOException {
+        return documentService.getSearch();
+    }
 
     /**
      * 도큐먼트 생성 API
@@ -45,6 +48,13 @@ public class DocumentController {
     public Map<String, Object> getDocument(@PathVariable String id) throws IOException {
         return documentService.getDocument(id);
     }
+
+    @GetMapping("/custom")
+    public List<Map<String,Object>> getCustom(@RequestBody SearchRequestDto requestDto) throws IOException {
+        return documentService.getCustom(requestDto);
+    }
+
+
 
     /**
      * 아이디로 도큐먼트 삭제 API
