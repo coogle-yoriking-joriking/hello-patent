@@ -46,40 +46,110 @@ public class DocumentServiceImpl implements DocumentService {
     private static final String SUMMARY = "summary";
 
     @Override // 전체 조회
-    public List<Map<String,Object>> getSearch() throws IOException {
+    public List<Map<String, Object>> getSearch() throws IOException {
 
         SearchRequest searchRequest = new SearchRequest(esProperties.getPatentIndexName());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.size(500);
 
 
-
         searchRequest.source(searchSourceBuilder);
-        List<Map<String,Object>> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<>();
         SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
-        for(SearchHit hit : searchHits) {
+        for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
             list.add(sourceMap);
         }
         return list;
 
     }
+
 
     @Override // 필드별 조회
-    public List<Map<String,Object>> getCustom(SearchRequestDto requestDto) throws IOException {
+    public List<Map<String, Object>> getCustom(SearchRequestDto requestDto) throws IOException {
 
         SearchRequest searchRequest = new SearchRequest(esProperties.getPatentIndexName());
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        //제외방식 중첩?
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        boolQueryBuilder.should(QueryBuilders.wildcardQuery(requestDto.getType(), "*" + requestDto.getContent() + "*"));
+        for (int i = 0; i < requestDto.getContentType().length; i++) {
+
+            // contentType=전체 contentValue=전기,반도체
+            // &exceptType=발명의명칭&exceptValue=전자
+
+            boolean isNum = Objects.equals(requestDto.getContentType()[i], "번호정보");
+            boolean isAll = Objects.equals(requestDto.getContentType()[i], "전체");
+            boolean isPc = Objects.equals(requestDto.getContentType()[i], "IPC/CPC분류");
+            boolean isYear = Objects.equals(requestDto.getContentType()[i], "연도");
+
+            if (isNum) {
+                boolQueryBuilder.must(QueryBuilders.multiMatchQuery(
+                        requestDto.getContentValue()[i], "출원번호", "공개번호", "공고번호", "등록번호"));
+            } else if (isAll) {
+                boolQueryBuilder.must(QueryBuilders.multiMatchQuery(
+                        "*" + requestDto.getContentValue()[i] + "*", "*").type("cross_fields"));
+            }else if (isPc) {
+                boolQueryBuilder.must(QueryBuilders.moreLikeThisQuery(new String[]{"IPC분류", "CPC분류"},
+                        new String[]{requestDto.getContentValue()[i]}, null).minDocFreq(1).minTermFreq(1));
+            }else if (isYear) {
+                boolQueryBuilder.must(QueryBuilders.wildcardQuery(
+                        "출원일자",requestDto.getContentValue()[i]+ ".*"));
+            } else {
+                boolQueryBuilder.must(QueryBuilders.wildcardQuery(
+                        requestDto.getContentType()[i], "*" + requestDto.getContentValue()[i] + "*"));
+            }
+        }
+
+        if (requestDto.getExceptType() != null) {
+            for (int z = 0; z < requestDto.getExceptType().length; z++) {
+                boolean isENum = Objects.equals(requestDto.getExceptType()[z], "번호정보");
+                boolean isEAll = Objects.equals(requestDto.getExceptType()[z], "전체");
+                boolean isPc = Objects.equals(requestDto.getExceptType()[z], "IPC/CPC분류");
+                boolean isYear = Objects.equals(requestDto.getExceptType()[z], "연도");
+                if (isENum) {
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
+                            requestDto.getExceptValue()[z], "출원번호", "공개번호", "공고번호", "등록번호"));
+                } else if (isEAll) {
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
+                            requestDto.getExceptValue()[z], "*"));
+                }else if (isPc) {
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
+                            requestDto.getExceptValue()[z], "IPC분류", "CPC분류"));
+                }else if (isYear) {
+                    boolQueryBuilder.mustNot(QueryBuilders.wildcardQuery(
+                            "출원일자",requestDto.getExceptValue()[z]+ ".*"));
+                }else {
+                    boolQueryBuilder.mustNot(QueryBuilders.wildcardQuery(requestDto.getExceptType()[z], requestDto.getExceptValue()[z] ));
+                }
+            }
+        }
+
+
+        // 법적 상태
+        if (requestDto.getStatusType() != null) {
+            for (int k = 0; k < requestDto.getStatusType().length; k++) {
+                boolQueryBuilder.must(QueryBuilders.termQuery("법적상태", requestDto.getStatusType()[k]));
+            }
+        }
+
+        if(Objects.equals(requestDto.getPatentType(), "특허")) {
+            boolQueryBuilder.must(QueryBuilders.wildcardQuery(
+                    "출원번호", "10-*"
+            ));
+        } else if(Objects.equals(requestDto.getPatentType(), "실용")) {
+            boolQueryBuilder.must(QueryBuilders.wildcardQuery(
+                    "출원번호", "20-*"
+            ));
+        }
 
         searchSourceBuilder.size(500);
-
         searchSourceBuilder.query(boolQueryBuilder);
         searchRequest.source(searchSourceBuilder);
-        List<Map<String,Object>> list = new ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<>();
         SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
-        for(SearchHit hit : searchHits) {
+        for (
+                SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
             list.add(sourceMap);
         }
@@ -87,26 +157,26 @@ public class DocumentServiceImpl implements DocumentService {
 
     }
 
-        // queryDSL 로 표현했을 때
-        // GET /students/_search
-        //{
-        //  "query": {
-        //    "bool": {
-        //      "should": [
-        //        {
-        //          "match": {
-        //            "name": "학생1"
-        //          }
-        //        },
-        //        {
-        //          "match": {
-        //            "name": "학생22"
-        //          }
-        //        }
-        //      ]
-        //    }
-        //  }
-        //}
+    // queryDSL 로 표현했을 때
+    // GET /students/_search
+    //{
+    //  "query": {
+    //    "bool": {
+    //      "should": [
+    //        {
+    //          "match": {
+    //            "name": "학생1"
+    //          }
+    //        },
+    //        {
+    //          "match": {
+    //            "name": "학생22"
+    //          }
+    //        }
+    //      ]
+    //    }
+    //  }
+    //}
 //    }
 
     @Override
@@ -148,7 +218,6 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
 
-
 //    @Override
 //    public DeleteResponse deleteDocument(String id) throws IOException {
 //        DeleteRequest deleteRequest = new DeleteRequest(esProperties.getStudentIndexName(), id);
@@ -161,7 +230,7 @@ public class DocumentServiceImpl implements DocumentService {
 //
 //        // name 을 이름 수정으로 변경
 //        Map<String, Object> parameterMap = Collections.singletonMap(NAME, "이름수정");
-//        Script inline = new Script(ScriptType.INLINE, "painless", "ctx._source.name = params.name", parameterMap);
+//        Script inline = new Script(ScriptType.INLINE, "painless", "ctx..name = params.name", parameterMap);
 //        // 이미 스크립트가 등록되어 있는 경우에는 ScriptType 을 Stored 로
 //        updateRequest.script(inline);
 //        // updateRequest.scriptedUpsert(true/false);
@@ -209,6 +278,28 @@ public class DocumentServiceImpl implements DocumentService {
 //        request.add(new IndexRequest(esProperties.getStudentIndexName()).source(XContentType.JSON, NAME, "테스트2"));
 //        request.add(new IndexRequest(esProperties.getStudentIndexName()).source(XContentType.JSON, NAME, "테스트3"));
 //        return client.bulk(request, RequestOptions.DEFAULT);
+
+//    @Override // 필드별 조회
+//    public List<Map<String,Object>> getCustom1(SearchRequestDto requestDto) throws IOException {
+//        d
+//        SearchRequest searchRequest = new SearchRequest(esProperties.getPatentIndexName());
+//        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+//        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+//        boolQueryBuilder.should(QueryBuilders.wildcardQuery(requestDto.getType(), "*" + requestDto.getContent() + "*"));
+//
+//        searchSourceBuilder.size(500);
+//
+//        searchSourceBuilder.query(boolQueryBuilder);
+//        searchRequest.source(searchSourceBuilder);
+//        List<Map<String,Object>> list = new ArrayList<>();
+//        SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
+//        for(SearchHit hit : searchHits) {
+//            Map<String, Object> sourceMap = hit.getSourceAsMap();
+//            list.add(sourceMap);
+//        }
+//        return list;
+//
+//    }
 
 
 }

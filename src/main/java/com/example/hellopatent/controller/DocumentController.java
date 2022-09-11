@@ -50,7 +50,7 @@ public class DocumentController {
     }
 
     @GetMapping("/custom")
-    public List<Map<String,Object>> getCustom(@RequestBody SearchRequestDto requestDto) throws IOException {
+    public List<Map<String,Object>> getCustom( SearchRequestDto requestDto) throws IOException {
         return documentService.getCustom(requestDto);
     }
 
