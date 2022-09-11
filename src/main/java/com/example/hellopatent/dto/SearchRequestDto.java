@@ -7,7 +7,15 @@ import lombok.Setter;
 @Setter
 public class SearchRequestDto {
 
-    private String type;
+    private String[] contentType;
 
-    private String content;
+    private String[] contentValue;
+
+    private String[] exceptType;
+
+    private String[] exceptValue;
+
+    private String[] statusType;
+
+    private String patentType;
 }

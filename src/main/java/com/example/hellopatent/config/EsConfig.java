@@ -13,7 +13,6 @@ public class EsConfig extends AbstractElasticsearchConfiguration {
 
     @Override
     public RestHighLevelClient elasticsearchClient() {
-        RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(esProperties.httpHost()));
-        return client;
+        return new RestHighLevelClient(RestClient.builder(esProperties.httpHost()));
     }
 }
