@@ -1,0 +1,15 @@
+<!-- 검색바 -->
+<div id="search-area" th:fragment="searchAreaFragment">
+	<select id="select-option">
+		<option value="찾고싶은 키워드를 입력해주세요" name="전체" value2="제외할 키워드를 입력해주세요">전체</option>
+		<option value="제목에서 찾고싶은 키워드를 입력해주세요" name="발명의명칭" value2="제목에서 제외할 키워드를 입력해주세요">제목(명칭)</option>
+		<option value="요약에서 찾고싶은 키워드를 입력해주세요" name="요약" value2="요약에서 제외할 키워드를 입력해주세요">요약</option>
+		<option value="출원/공고/공개/등록 번호에서 찾고싶은 번호를 입력해주세요" name="번호정보" value2="출원/공고/공개/등록 번호에서 제외할 번호를 입력해주세요">
+			번호정보</option>
+		<option value="찾고싶은 연도를 입력해주세요" name="연도" value2="제외할 연도를 입력해주세요">연도</option>
+		<option value="찾고싶은 IPC/CPC를 입력해주세요" name="IPC/CPC분류" value2="제외할 IPC/CPC를 입력해주세요">IPC/CPC분류</option>
+		<option value="찾고싶은 출원인을 입력해주세요" name="출원인" value2="제외할 출원인을 입력해주세요">출원인</option>
+	</select>
+	<input type="text" id="search-input" placeholder="찾고싶은 키워드를 입력해주세요">
+	<button class="search-button"></button>
+</div>
