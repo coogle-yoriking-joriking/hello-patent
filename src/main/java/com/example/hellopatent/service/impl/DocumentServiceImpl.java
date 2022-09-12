@@ -129,7 +129,7 @@ public class DocumentServiceImpl implements DocumentService {
         // 법적 상태
         if (requestDto.getStatusType() != null) {
             for (int k = 0; k < requestDto.getStatusType().length; k++) {
-                boolQueryBuilder.must(QueryBuilders.termQuery("법적상태", requestDto.getStatusType()[k]));
+                boolQueryBuilder.should(QueryBuilders.termQuery("법적상태", requestDto.getStatusType()[k]));
             }
         }
 

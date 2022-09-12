@@ -1,0 +1,236 @@
+html,
+body,
+div {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	overflow: overlay;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+::selection {
+	background-color: #00000010;
+}
+
+/* 버튼 */
+.color-button {
+	background-color: #ff7e52;
+	color: white;
+}
+
+.color-button:hover {
+	background-color: #f05b28;
+}
+
+.white-button {
+	background-color: white;
+}
+
+.white-button:hover {
+	background-color: #00000010;
+}
+
+.color-border-button {
+	background: none;
+	border: 1px solid #3995d0;
+	color: #3995d0;
+}
+
+.color-border-button:hover {
+	background-color: #00000010;
+}
+
+/* 상단바 */
+.navigation-bar {
+	position: fixed;
+	top: 0;
+	z-index: 10;
+
+	display: grid;
+	grid-template-columns: 1fr 10fr 1fr;
+	align-items: center;
+	justify-items: center;
+
+	width: 100%;
+	height: 70px;
+
+	background-color: #82c5f1;
+	transition: top 0.2s ease-in-out;
+}
+
+.scroll-down {
+	top: -70px;
+}
+
+#login-button {
+	grid-column: 3/4;
+
+	width: 100px;
+	height: 40px;
+	font-size: 1rem;
+}
+
+/* 모달창 */
+.modal-background {
+	position: fixed;
+	background-color: rgba(0, 0, 0, 0.50);
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.modal {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.modal.on {
+	display: flex;
+}
+
+.modal-card {
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	width: 400px;
+	height: 500px;
+	border-radius: 10px;
+	box-shadow: 0 0 20px 0 darkslategrey;
+}
+
+.id-password {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	width: 100%;
+	margin: 40px 0;
+}
+
+.id-password textarea {
+	resize: none;
+	box-sizing: border-box;
+	padding: 20px 10px 0 10px;
+	border: none;
+	border-bottom: 1px solid;
+	width: 70%;
+	height: 50px;
+	margin-bottom: 10px;
+	font-size: 1rem;
+	font-family: Georgia, "맑은 고딕", serif;
+}
+
+.id-password textarea:focus {
+	outline: none;
+}
+
+.button-position {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.button-position button {
+	width: 70%;
+	height: 50px;
+	margin-bottom: 10px;
+	font-size: 1rem;
+	border: 1px solid #cdcdcd;
+	box-shadow: 0 3px 5px 0 #cdcdcd;
+	border-radius: 10px;
+}
+
+#double-check {
+	position: absolute;
+	right: 60px;
+	margin-top: 13px;
+	padding: 5px;
+}
+
+/* 검색창 */
+.search-bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+
+	height: 25vh;
+}
+
+#search-area {
+	grid-column: 2/3;
+
+}
+
+#select-option {
+	position: absolute;
+	width: 140px;
+	height: 62px;
+	padding: 0 0 0 15px;
+
+	background-color: transparent;
+	border: none;
+	color: #3995d0;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+#select-option {
+	cursor: pointer;
+}
+
+#select-option:focus-visible {
+	outline: none;
+}
+
+#search-input {
+	width: 600px;
+	height: 60px;
+	padding: 0 50px 0 145px;
+
+	border: 1px solid #cdcdcd;
+	border-radius: 30px;
+	box-shadow: 5px 10px 5px 0 #3995d0;
+	font-size: 1rem;
+}
+
+#search-input:focus {
+	outline: none;
+}
+
+.search-button {
+	position: absolute;
+	margin: 0 0 0 -60px;
+	width: 60px;
+	height: 62px;
+
+	background: center center url("https://cdn-icons-png.flaticon.com/512/61/61088.png");
+	background-repeat: no-repeat;
+	background-size: 20px;
+
+	border: none;
+}
+
+.search-button:hover {
+	cursor: pointer;
+}

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>안녕, 특허</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+	<link href="/css/index.css" rel="stylesheet">
+
+</head>
+<style>
+	/* 사이드바 */
+	.side-bar {
+		position: sticky;
+		top: 200px;
+		left: 50px;
+		align-self: flex-start;
+
+		width: 200px;
+		height: 350px;
+		padding: 20px;
+		padding-top: 10px;
+		margin: 50px 0;
+
+		border-radius: 10px;
+		background-color: white;
+		box-shadow: 0 5px 10px 0 gray;
+		transition: all 0.2s ease-in-out;
+	}
+	.show-side {
+		width: 50px;
+		padding-left: 0;
+		padding-right: 0;
+		left: 0;
+
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+	.select-filter {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	/* 검색 조회 결과 */
+	.card-container {
+		display: flex;
+		flex-direction: column;
+		row-gap: 20px;
+
+		max-width: 1700px;
+		margin-top: -530px;
+		padding: 100px;
+	}
+
+	.card {
+		display: flex;
+		flex-direction: row;
+
+		width: 1000px;
+		height: 300px;
+		margin: auto;
+
+		border: 1px solid #dfe1e5;
+		border-radius: 13px;
+		box-shadow: 0 0 5px 0 #dfe1e5;
+
+		cursor: pointer;
+		overflow: hidden;
+	}
+
+	.card-img {
+		aspect-ratio: 1/1;
+		border-right: 1px solid #dfe1e5;
+	}
+
+	.card-img img {
+		width: 100%;
+		aspect-ratio: 1/1;
+		object-fit: contain;
+	}
+
+	.card-content {
+		width: 100%;
+
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		grid-template-rows: 7fr 3fr 3fr 10fr;
+		grid-template-areas:
+			"title title title title"
+			"app app applicant applicant"
+			"status ipc ipc ipc"
+			"summary summary summary summary";
+		justify-items: center;
+		align-items: center;
+	}
+
+	.card-title {
+		display: -webkit-box;
+		grid-area: title;
+		overflow: hidden;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+
+		width: 80%;
+
+		font-size: 1.3rem;
+		font-weight: bold;
+	}
+
+	.card-app {
+		display: flex;
+		grid-area: app;
+
+		font-weight: bold;
+	}
+
+	.card-ipc {
+		display: flex;
+		grid-area: ipc;
+
+		width: 90%;
+	}
+	.card-ipc div{
+		word-break: keep-all;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.card-applicant {
+		display: flex;
+		grid-area: applicant;
+
+		width: 90%;
+	}
+	.card-applicant div{
+		word-break: keep-all;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.card-summary {
+		display: -webkit-box;
+		grid-area: summary;
+		overflow: hidden;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+
+		width: 95%;
+
+		color: #999999;
+	}
+	.card-status {
+		display: flex;
+		grid-area: status;
+
+		font-weight: bold;
+	}
+
+	.card-info {
+		margin-right: 10px;
+		padding: 0 5px;
+
+		border: 1px solid #82c5f1;
+		border-radius: 5px;
+		background-color: #e8f6fe;
+
+		color: black;
+		font-weight: bold;
+	}
+	.card-notinfo {
+		overflow: hidden;
+	}
+</style>
+
+<script th:inline="javascript">
+	
+	let contentType = ["[[${type}]]"];
+	let contentValue = ["[[${value}]]"];
+	let exceptType = [];
+	let exceptValue = [];
+
+	// 검색 엔터 또는 버튼
+	$(document).on("keyup", "#search-input", function (e) {
+		// input 에 focus 되있을 때 엔터 입력시
+		if (e.key === "Enter") {
+
+			var input_value = $(this).val().replace(/\s+/g, ' ').trim(); // 값 가져오기
+
+			// 값이 없으면 넘어가기
+			if (input_value !== "") {
+				$("#search-input").val(input_value);
+				search(input_value);
+			}else {
+				$("#search-input").val(input_value);
+			}
+		}
+	});
+	$(document).on("click", ".search-button", function () {
+		var input_value = $("#search-input").val().replace(/\s+/g, ' ').trim(); // 값 가져오기
+
+		// 값이 없으면 넘어가기
+		if (input_value !== "") {
+			$("#search-input").val(input_value);
+			search(input_value);
+		}else {
+			$("#search-input").val(input_value);
+		}
+	});
+
+	// 검색 결과 나타내기
+	function search(input_value) {
+
+		// 검색어 입력을 통했을때
+		if(input_value != null) {
+			if($("input[value='re-search']").is(":checked")){
+				contentType = []; contentValue = []; exceptType = []; exceptValue = [];
+				contentType.push($("#select-option").children("option:selected").attr("name"));
+				contentValue.push(input_value);
+			}else if($("input[value='include-search']").is(":checked")) {
+				contentType.push($("#select-option").children("option:selected").attr("name"));
+				contentValue.push(input_value);
+			}else if($("input[value='except-search']").is(":checked")) {
+				exceptType.push($("#select-option").children("option:selected").attr("name"));
+				exceptValue.push(input_value);
+			}
+		}
+
+		// 필터링 적용할 때, 기존에 입력된 검색어가 없다면 작동 안됨
+		if(contentType.length == 0) {
+			return;
+		}
+		let data = {
+			"contentType": contentType,
+			"contentValue": contentValue,
+			"exceptType": exceptType,
+			"exceptValue": exceptValue
+		};
+
+		// 특허/실용 구분
+		if($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
+		if($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
+
+		// 필터링 적용
+		let statusType = [];
+		if(!$("input[name='select-all']").is(":checked")){
+			for(let i=0; i<7; i++) {
+				if($("input[name='select']")[i].checked) {
+					statusType.push($($("input[name='select']"))[i].value);
+				}
+			}
+			data.statusType = statusType;
+		}
+
+		console.log(data)
+
+		$.ajax({
+			type: "GET",
+			url: `/api/document/custom`,
+			data: data,
+			success: function (response) {
+				$(".card-container").children().remove();;
+				for(let i=0; i<response.length; i++) {
+					let card = response[i];
+					let application_number = card["출원번호"].replace(/-/g, "");
+					let ipc = card["IPC분류"].split("|");
+					let status = card["법적상태"]
+					if(status == "소멸 (등록료불납)" || status == "소멸 (존속기간만료)") {
+						status = "소멸";
+					}
+					let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}&pub_reg=P',
+																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
+										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
+										<div class="card-content">
+											<div class="card-title">${card["발명의명칭"]}</div>
+											<div class="card-app">
+												<div class="card-info">출원번호</div>
+												<div>${card["출원번호"]} (${card["출원일자"]})</div>
+											</div>
+											<div class="card-applicant">
+												<div class="card-info">출원인</div>
+												<div class="card-notinfo">${card["출원인"]}</div>
+											</div>
+											<div class="card-status">
+												<div class="card-info">행정상태</div>
+												<div style="margin-right: 25px;">${status}</div>
+											</div>
+											<div class="card-ipc">
+												<div class="card-info">IPC</div>
+												<div class="card-notinfo">${ipc}</div>
+											</div>
+											<div class="card-summary"><div class="card-info" style="display: inline-block;">요약</div>${card["요약"]}</div>
+										</div>
+									</div>`;
+					$(".card-container").append(temphtml);
+				}
+			}
+		});
+	}
+
+	function filterSearch() {
+		let data = {
+			"contentType": contentType,
+			"contentValue": contentValue,
+			"exceptType": exceptType,
+			"exceptValue": exceptValue
+		};
+		if($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
+		if($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
+		let statusType = [];
+		if(!$("#select-status").is(":checked")){
+			for(let i=0; i<7; i++) {
+				if($("input[name='select']")[i].checked) {
+					statusType.push($($("input[name='select']"))[i].value);
+				}
+			}
+			data.statusType = statusType;
+		}
+
+
+	}
+</script>
+
+<body>
+	<nav class="navigation-bar scroll-up">
+		<button class="color-border-button" id="login-button" onclick='$("#login").addClass("on")'>로그인</button>
+	</nav>
+	<div style="background-color: #82c5f1;">
+		<div style="height: 70px;"></div>
+		<div class="search-bar">
+			<div th:replace="/fragments/index.html :: searchAreaFragment"></div>
+			<div style="margin-top: 15px;">
+				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="re-search">재검색</label>
+				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="include-search">포함검색</label>
+				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="except-search">제외검색</label>
+			</div>
+		</div>
+	</div>
+	<div class="main">
+		<div class="side-bar">
+			<div style="display: flex; justify-content: space-between;">
+				<div style="cursor: pointer;" onclick="$('html, body').animate({scrollTop:0}, '300' );">▲ top</div>
+				<div style="cursor: pointer;" id="hide-side"><img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" style="width: 20px;"></div>
+			</div>
+			<div>
+				<h2 style="color: #3995d0;">권리구분</h2>
+			</div>
+			<div class="select-filter">
+				<label style="grid-column-start: 1; grid-column-end: 3;"><input type="checkbox" value="특허">특허</label>
+				<label><input type="checkbox" value="실용">실용</label>
+			</div>
+			<div>
+				<h2 style="color: #3995d0;">행정상태</h2>
+			</div>
+			<div class="select-filter" id="select-status">
+				<label><input type="checkbox" name="select-all">전체</label>
+				<label><input type="checkbox" name="select" value="거절">거절</label>
+				<label><input type="checkbox" name="select" value="등록">등록</label>
+				<label><input type="checkbox" name="select" value="소멸 (등록료불납)">소멸</label>
+				<label><input type="checkbox" name="select" value="무효">무효</label>
+				<label><input type="checkbox" name="select" value="취하">취하</label>
+				<label><input type="checkbox" name="select" value="포기">포기</label>
+				<label><input type="checkbox" name="select" value="공개">공개</label>
+				<button id="apply-filter" onclick="search()">적용</button>
+			</div>
+		</div>
+		<div class="card-container">
+			<div class="card" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=1020227029496&pub_reg=P',
+													'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
+				<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=1020227029416"></div>
+				<div class="card-content">
+					<div class="card-title">반도체 장치의 제작 방법(METHOD FOR MANUFACTURING SEMICONDUCTOR DEVICE)</div>
+					<div class="card-app">
+						<div class="card-info">출원번호</div>
+						<div>10-2022-0110053 (2022.08.31)</div>
+					</div>
+					<div class="card-applicant">
+						<div class="card-info">출원인</div>
+						<div class="card-notinfo">가부시키가이샤 한도오따이 에네루기 켄큐쇼(일본국 가나가와켄 아쓰기시 하세 ***)</div>
+					</div>
+					<div class="card-status">
+						<div class="card-info">행정상태</div>
+						<div style="margin-right: 25px;">공개</div>
+					</div>
+					<div class="card-ipc">
+						<div class="card-info">IPC</div>
+						<div class="card-notinfo">H01L 29/786, H01L 29/40, H01L 27/1157, H01L 29/423, H01L 29/792</div>
+					</div>
+					<div class="card-summary"><div class="card-info" style="display: inline-block;">요약</div>본 발명은 산화물 반도체에 채널이 형성되는 트랜지스터에 안정된 전기 특성을 부여한다. 산화물 반도체에 채널이 형성되는 트랜지스터의
+						문턱 전압의 변동을 억제한다. 산화물 반도체에 채널이 형성되는 n채널형 트랜지스터에서 정의 문턱 전압을 가지는 노멀리 오프형의 스위칭 소자를 제공한다. 기판 위에 하지
+						절연층을 형성하고, 하지 절연층 위에 산화물 반도체층을 형성하고, 산화물 반도체층 위에 제 1 게이트 절연층을 형성하고, 제 1 게이트 절연층 위에, 100℃ 이상의 기판
+						온도로 스퍼터링법 또는 원자층 퇴적법에 의해 제 2 게이트 절연층을 형성하고, 제 2 게이트 절연층 위에 게이트 전극층을 형성한다.</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	// 검색 옵션 기본값 = 재검색
+	$("input[value='re-search']").prop("checked", true);
+
+	// 제외 검색 체크 시 색상 변경
+	$(document).on("change", "input[name='search-type']", function () {
+		if ($("input[value='except-search']")[0].checked) {
+			$("#select-option").css("color", "red")
+		} else {
+			$("#select-option").css("color", "")
+		}
+		changePlaceholder();
+	})
+
+	// 드롭다운 항목에 따라 placeholder 변경
+	$(document).on("change", "#select-option", function () {
+		changePlaceholder();
+	});
+
+	function changePlaceholder() {
+		if ($("input[value='except-search']")[0].checked) {
+			$("#search-input").attr("placeholder", $("#select-option").children("option:selected")[0].getAttribute("value2"))
+		} else {		
+			$("#search-input").attr("placeholder", $("#select-option")[0].value)
+		}
+	}
+
+	// 모든 체크박스 기본값 = checked
+	$("input[type=checkbox]").prop("checked", true);
+
+	// 행정상태 체크박스 전체선택 기능
+	$(document).on("click", "input[name=select-all]", function () {
+		if ($(this).is(":checked")) $("input[name=select]").prop("checked", true);
+		else $("input[name=select]").prop("checked", false);
+	});
+	$(document).on("click", "input[name=select]",function() {
+		var total = $("input[name=select]").length;
+		var checked = $("input[name=select]:checked").length;
+
+		if(total != checked) $("input[name=select-all]").prop("checked", false);
+		else $("input[name=select-all]").prop("checked", true); 
+	});
+
+	// 사이드바 숨기기
+	$(document).on("click", "#hide-side", function() {
+		$(".side-bar").addClass("show-side");
+		$(".side-bar").children().hide();
+		let temp = '<div style="cursor: pointer; width: 10px; margin: auto;" id="show-side"><img src="https://cdn-icons-png.flaticon.com/512/271/271228.png" style="width: 20px;"></div>'
+		$(".side-bar").prepend(temp)
+	})
+	$(document).on("click", "#show-side", function() {
+		$(".side-bar").removeClass("show-side");
+		$(this).remove();
+		setTimeout(() => $(".side-bar").children().show(100), 200)
+	});
+</script>
+<script>
+	// 스크롤에 따라 상단바 보이기/숨기기
+
+	let didScroll;
+	let lastScrollTop = 0;
+	let delta = 300; // 동작의 구현이 시작되는 위치
+	let navbarHeight = 70; // 영향을 받을 요소를 선택
+
+	// 스크롤 여부 알려주기
+	$(window).scroll(function (event) {
+		didScroll = true;
+	});
+
+	/* hasScrolled() 실행
+		didScroll 재설정 */
+	setInterval(function () {
+		if (didScroll) {
+			hasScrolled();
+			didScroll = false;
+		}
+	}, 250);
+
+	// 기능 구현
+	function hasScrolled() {
+
+		// 현재 스크롤 위치 저장
+		var st = $(this).scrollTop();
+
+		// 설정한 delta 값보다 더 스크롤되었는지 확인
+		if (Math.abs(lastScrollTop - st) <= delta) {
+			return;
+		}
+
+		/* 상단바 높이보다 더 스크롤되었는지 확인
+			스크롤 방향 확인 */
+		if (st > lastScrollTop && st > navbarHeight) {
+			// Scroll Down
+			$(".navigation-bar").removeClass('scroll-up').addClass('scroll-down');
+		} else {
+			// Scroll Up
+			if (st + $(window).height() < $(document).height()) {
+				$('.navigation-bar').removeClass('scroll-down').addClass('scroll-up');
+			}
+		}
+
+		// 스크롤 어느정도 내리면 상단바로 검색바 옮기기
+		if (st < delta + 700) {
+			// 위쪽
+			if ($(".search-bar").find("#search-input").length == 0) {
+				$("#search-area").fadeOut(300, function () {
+					$("#search-input").removeAttr("style");
+					$(".search-bar").prepend($(this));
+					$(this).fadeIn(10);
+				})
+			}
+		} else {
+			// 아래쪽
+			$("#search-input").css("box-shadow", "none");
+			$(".navigation-bar").prepend($("#search-area"));
+		}
+
+		// lastScrollTop 에 현재 스크롤위치를 저장
+		lastScrollTop = st;
+	}
+
+	/* 추가로 웹페이지의 스크롤을 내렸을때를 감지해 코드를 실행시키는 함수입니다.
+	$(window).scroll(function(){ 
+	if($(window).scrollTop() == $(document).height() - $(window).height()){ 
+		// 실행할 함수
+	} 
+	});
+	*/
+</script>
+
+</html>
