@@ -172,11 +172,9 @@
 		overflow: hidden;
 	}
 </style>
-
-<script th:inline="javascript">
-	
-	let contentType = ["[[${type}]]"];
-	let contentValue = ["[[${value}]]"];
+<script>
+	let contentType = [];
+	let contentValue = [];
 	let exceptType = [];
 	let exceptValue = [];
 
@@ -316,11 +314,8 @@
 			}
 			data.statusType = statusType;
 		}
-
-
 	}
 </script>
-
 <body>
 	<nav class="navigation-bar scroll-up">
 		<button class="color-border-button" id="login-button" onclick='$("#login").addClass("on")'>로그인</button>
@@ -328,7 +323,7 @@
 	<div style="background-color: #82c5f1;">
 		<div style="height: 70px;"></div>
 		<div class="search-bar">
-			<div th:replace="/fragments/index.html :: searchAreaFragment"></div>
+			<div th:replace="fragments/index.html :: searchAreaFragment"></div>
 			<div style="margin-top: 15px;">
 				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="re-search">재검색</label>
 				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="include-search">포함검색</label>
@@ -364,35 +359,7 @@
 				<button id="apply-filter" onclick="search()">적용</button>
 			</div>
 		</div>
-		<div class="card-container">
-			<div class="card" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=1020227029496&pub_reg=P',
-													'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
-				<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=1020227029416"></div>
-				<div class="card-content">
-					<div class="card-title">반도체 장치의 제작 방법(METHOD FOR MANUFACTURING SEMICONDUCTOR DEVICE)</div>
-					<div class="card-app">
-						<div class="card-info">출원번호</div>
-						<div>10-2022-0110053 (2022.08.31)</div>
-					</div>
-					<div class="card-applicant">
-						<div class="card-info">출원인</div>
-						<div class="card-notinfo">가부시키가이샤 한도오따이 에네루기 켄큐쇼(일본국 가나가와켄 아쓰기시 하세 ***)</div>
-					</div>
-					<div class="card-status">
-						<div class="card-info">행정상태</div>
-						<div style="margin-right: 25px;">공개</div>
-					</div>
-					<div class="card-ipc">
-						<div class="card-info">IPC</div>
-						<div class="card-notinfo">H01L 29/786, H01L 29/40, H01L 27/1157, H01L 29/423, H01L 29/792</div>
-					</div>
-					<div class="card-summary"><div class="card-info" style="display: inline-block;">요약</div>본 발명은 산화물 반도체에 채널이 형성되는 트랜지스터에 안정된 전기 특성을 부여한다. 산화물 반도체에 채널이 형성되는 트랜지스터의
-						문턱 전압의 변동을 억제한다. 산화물 반도체에 채널이 형성되는 n채널형 트랜지스터에서 정의 문턱 전압을 가지는 노멀리 오프형의 스위칭 소자를 제공한다. 기판 위에 하지
-						절연층을 형성하고, 하지 절연층 위에 산화물 반도체층을 형성하고, 산화물 반도체층 위에 제 1 게이트 절연층을 형성하고, 제 1 게이트 절연층 위에, 100℃ 이상의 기판
-						온도로 스퍼터링법 또는 원자층 퇴적법에 의해 제 2 게이트 절연층을 형성하고, 제 2 게이트 절연층 위에 게이트 전극층을 형성한다.</div>
-				</div>
-			</div>
-		</div>
+		<div class="card-container"></div>
 	</div>
 </body>
 <script>
