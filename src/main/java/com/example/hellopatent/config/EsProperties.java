@@ -20,7 +20,19 @@ public class EsProperties {
         return new HttpHost(host, port, "http");
     }
 
-    public String getPatentIndexName() {
+    public String getkrPatentIndexName() {
+        return Optional.ofNullable(indices).map(Indices::getKr_patentsIndexName).orElse(null);
+    }
+
+    public String getenPatentIndexName() {
+        return Optional.ofNullable(indices).map(Indices::getEn_patentsIndexName).orElse(null);
+    }
+
+    public String getnotenPatentIndexName() {
+        return Optional.ofNullable(indices).map(Indices::getNoten_patentsIndexName).orElse(null);
+    }
+
+    public String getjpPatentIndexName() {
         return Optional.ofNullable(indices).map(Indices::getPatentsIndexName).orElse(null);
     }
 
@@ -33,6 +45,11 @@ public class EsProperties {
     @Setter
     public static class Indices {
         String patentsIndexName;
+        String kr_patentsIndexName;
+        String jp_patentsIndexName;
+        String en_patentsIndexName;
+        String noten_patentsIndexName;
+
         String testIndexName;
     }
 
