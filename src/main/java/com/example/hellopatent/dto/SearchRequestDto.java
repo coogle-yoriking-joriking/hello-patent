@@ -17,5 +17,11 @@ public class SearchRequestDto {
 
     private String[] statusType;
 
+    private String sortType;
+
+    private int page = 0;
+
     private String patentType;
+
+    private String[] country;
 }

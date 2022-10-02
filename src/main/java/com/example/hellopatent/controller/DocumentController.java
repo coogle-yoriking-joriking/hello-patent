@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/document")
 @RequiredArgsConstructor
 public class DocumentController {
 
@@ -33,10 +33,6 @@ public class DocumentController {
      * @return
      * @throws IOException
      */
-    @PostMapping
-    public IndexResponse createDocument() throws IOException {
-        return documentService.createDocument();
-    }
 
     /**
      * 아이디로 도큐먼트 검색 API
@@ -49,9 +45,14 @@ public class DocumentController {
         return documentService.getDocument(id);
     }
 
-    @GetMapping("/custom")
-    public List<Map<String,Object>> getCustom( SearchRequestDto requestDto) throws IOException {
-        return documentService.getCustom(requestDto);
+    @GetMapping("/patent/korean")
+    public List<Map<String,Object>> getKrPatent( SearchRequestDto requestDto) throws IOException {
+            return documentService.getKrPatent(requestDto);
+    }
+
+    @GetMapping("/patent/foreign")
+    public List<Map<String,Object>> getEnPatent( SearchRequestDto requestDto) throws IOException {
+            return documentService.getEnPatent(requestDto);
     }
 
 
