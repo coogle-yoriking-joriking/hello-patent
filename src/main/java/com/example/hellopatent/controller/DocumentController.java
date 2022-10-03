@@ -1,6 +1,7 @@
 package com.example.hellopatent.controller;
 
-import com.example.hellopatent.dto.SearchRequestDto;
+import com.example.hellopatent.dto.EnSearchRequestDto;
+import com.example.hellopatent.dto.KrSearchRequestDto;
 import com.example.hellopatent.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +19,12 @@ public class DocumentController {
 
 
     @GetMapping("/patent/korean")
-    public List<Map<String,Object>> getKrPatent( SearchRequestDto requestDto) throws IOException {
+    public List<Map<String,Object>> getKrPatent( KrSearchRequestDto requestDto) throws IOException {
             return documentService.getKrPatent(requestDto);
     }
 
     @GetMapping("/patent/foreign")
-    public List<Map<String,Object>> getEnPatent( SearchRequestDto requestDto) throws IOException {
+    public List<Map<String,Object>> getEnPatent( EnSearchRequestDto requestDto) throws IOException {
             return documentService.getEnPatent(requestDto);
     }
 
