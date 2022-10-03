@@ -1,7 +1,8 @@
 package com.example.hellopatent.service.impl;
 
 import com.example.hellopatent.config.EsProperties;
-import com.example.hellopatent.dto.SearchRequestDto;
+import com.example.hellopatent.dto.EnSearchRequestDto;
+import com.example.hellopatent.dto.KrSearchRequestDto;
 import com.example.hellopatent.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,16 +37,13 @@ public class DocumentServiceImpl implements DocumentService {
 
 
     @Override // 국내 조회
-    public List<Map<String, Object>> getKrPatent(SearchRequestDto requestDto) throws IOException {
+    public List<Map<String, Object>> getKrPatent(KrSearchRequestDto requestDto) throws IOException {
 
         SearchRequest searchRequest = new SearchRequest(esProperties.getkrPatentIndexName());
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        //제외방식 중첩?
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
-        //should용
-        BoolQueryBuilder boolQueryBuilder1 = new BoolQueryBuilder();
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
         for (int i = 0; i < requestDto.getContentType().length; i++) {
 
@@ -62,19 +60,10 @@ public class DocumentServiceImpl implements DocumentService {
 
             if (isNum) {
                 boolQueryBuilder.must(QueryBuilders.multiMatchQuery(
-                        requestDto.getContentValue()[i], "출원번호", "공개번호", "공고번호", "등록번호"));
+                        requestDto.getContentValue()[i], "*번호"));
             } else if (isAll) {
                 boolQueryBuilder
                         .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"*"));
-//                        .should(QueryBuilders.matchQuery("출원인",requestDto.getContentValue()[i]).fuzziness(Fuzziness.ONE))
-//                        .should(QueryBuilders.matchQuery("요약.lblank",requestDto.getContentValue()[i]).fuzziness(Fuzziness.ONE))
-//                        .should(QueryBuilders.matchQuery("요약",requestDto.getContentValue()[i]).fuzziness(Fuzziness.ONE))
-//                        .should(QueryBuilders.matchQuery("발명의명칭.lblank",requestDto.getContentValue()[i]).boost(3.0f).fuzziness(Fuzziness.ONE))
-//                        .should(QueryBuilders.matchQuery("발명의명칭",requestDto.getContentValue()[i]).boost(3.0f).fuzziness(Fuzziness.ONE))
-//
-//                        .must(QueryBuilders.matchQuery("발명의명칭.nori",requestDto.getContentValue()[i]))
-//                        .should(QueryBuilders.matchQuery("발명의명칭.ngram",requestDto.getContentValue()[i]).boost(8.0f))
-//                        .must(QueryBuilders.matchQuery("요약.nori",requestDto.getContentValue()[i]));
 
             }else if (isPc) {
                 boolQueryBuilder.must(QueryBuilders.moreLikeThisQuery(new String[]{"IPC분류", "CPC분류"},
@@ -84,19 +73,14 @@ public class DocumentServiceImpl implements DocumentService {
                         "출원일자",requestDto.getContentValue()[i]));
             }
             else if (isName) {
-                boolQueryBuilder
-                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭.lblank","발명의명칭","발명의명칭.nori","발명의명칭.ngram"));
-//                        .should(QueryBuilders.matchQuery("발명의명칭",requestDto.getContentValue()[i]).boost(3.0f).fuzziness(Fuzziness.ONE))
-//                        .must(QueryBuilders.matchQuery("발명의명칭.lblank",requestDto.getContentValue()[i]).boost(3.0f).fuzziness(Fuzziness.ONE))
-//                        .must(QueryBuilders.matchQuery("발명의명칭.nori",requestDto.getContentValue()[i]).boost(3.0f))
-//                        .should(QueryBuilders.matchQuery("발명의명칭.ngram",requestDto.getContentValue()[i]).boost(8.0f));
+                if(requestDto.getContentType().length == 1) {
+                    boolQueryBuilder
+                            .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭*"));
+                }
             }
-
             else if (isSummary) {
                 boolQueryBuilder
-                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"요약.lbank","요약.ngram","요약","요약.nori"));
-//                        .should(QueryBuilders.matchQuery("요약",requestDto.getContentValue()[i]).fuzziness(Fuzziness.ONE))
-//                        .should(QueryBuilders.matchQuery("요약.nori",requestDto.getContentValue()[i]));
+                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"요약*"));
             }
             else {
                 boolQueryBuilder.must(QueryBuilders.matchQuery(
@@ -116,23 +100,26 @@ public class DocumentServiceImpl implements DocumentService {
 
                 if (isENum) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
-                            requestDto.getExceptValue()[z], "출원번호", "공개번호", "공고번호", "등록번호"));
+                            requestDto.getExceptValue()[z], "*번호"));
                 } else if (isEAll) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
                             requestDto.getExceptValue()[z], "*"));
                 } else if (isName) {
-                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(requestDto.getExceptValue()[z],"발명의명칭.lblank","발명의명칭","발명의명칭.nori","발명의명칭.ngram"));
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
+                            requestDto.getExceptValue()[z],"발명의명칭*"));
                 } else if (isSummary) {
-                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(requestDto.getExceptValue()[z],"요약.lbank","요약.ngram","요약","요약.nori"));
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
+                            requestDto.getExceptValue()[z],"요약*"));
                 }
                 else if (isPc) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
-                            requestDto.getExceptValue()[z], "IPC분류", "CPC분류"));
+                            requestDto.getExceptValue()[z], "*분류"));
                 } else if (isYear) {
                     boolQueryBuilder.mustNot(QueryBuilders.matchQuery(
                             "출원일자",requestDto.getExceptValue()[z]));
                 }else {
-                    boolQueryBuilder.mustNot(QueryBuilders.matchQuery(requestDto.getExceptType()[z], requestDto.getExceptValue()[z] ));
+                    boolQueryBuilder.mustNot(QueryBuilders.matchQuery(
+                            requestDto.getExceptType()[z], requestDto.getExceptValue()[z] ));
                 }
             }
         }
@@ -166,8 +153,6 @@ public class DocumentServiceImpl implements DocumentService {
 
         searchSourceBuilder.query(boolQueryBuilder);
 
-//        searchSourceBuilder.postFilter(boolQueryBuilder1);
-
         searchRequest.source(searchSourceBuilder);
 
         List<Map<String, Object>> list = new ArrayList<>();
@@ -183,7 +168,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override // 해외 조회
-    public List<Map<String, Object>> getEnPatent(SearchRequestDto requestDto) throws IOException {
+    public List<Map<String, Object>> getEnPatent(EnSearchRequestDto requestDto) throws IOException {
 
 
         SearchRequest searchRequest = new SearchRequest( esProperties.getenPatentIndexName(),esProperties.getjpPatentIndexName(),esProperties.getnotenPatentIndexName());
@@ -191,8 +176,6 @@ public class DocumentServiceImpl implements DocumentService {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-
-//        BoolQueryBuilder boolQueryBuilder1 = new BoolQueryBuilder();
 
 
         //전체 검색
@@ -209,14 +192,10 @@ public class DocumentServiceImpl implements DocumentService {
 
             if (isNum) {
                 boolQueryBuilder.must(QueryBuilders.multiMatchQuery(
-                        requestDto.getContentValue()[i], "출원번호", "공개번호", "공고번호", "등록번호"));
+                        requestDto.getContentValue()[i], "*번호"));
             } else if (isAll) {
                 boolQueryBuilder
                         .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"*"));
-//                        .should(QueryBuilders.matchQuery("출원인",requestDto.getContentValue()[i]).operator(Operator.AND).fuzziness(Fuzziness.ONE))
-//                                .should(QueryBuilders.matchQuery("요약",requestDto.getContentValue()[i]).boost(1.5f).fuzziness(Fuzziness.ONE).operator(Operator.AND))
-//                                .should(QueryBuilders.matchQuery("발명의명칭",requestDto.getContentValue()[i]).boost(3.0f).operator(Operator.AND).fuzziness(Fuzziness.ONE))
-//                                .should(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"IPC분류","CPC분류", "공개번호", "공고번호", "등록번호", "출원번호","출원일자").type("cross_fields"));
             }else if (isPc) {
                 boolQueryBuilder.must(QueryBuilders.moreLikeThisQuery(new String[]{"IPC분류", "CPC분류"},
                         new String[]{requestDto.getContentValue()[i]}, null).minDocFreq(1).minTermFreq(1));
@@ -237,7 +216,7 @@ public class DocumentServiceImpl implements DocumentService {
                 boolean isYear = Objects.equals(requestDto.getExceptType()[z], "연도");
                 if (isENum) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
-                            requestDto.getExceptValue()[z], "출원번호", "공개번호", "공고번호", "등록번호"));
+                            requestDto.getExceptValue()[z], "*번호"));
                 } else if (isEAll) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
                             requestDto.getExceptValue()[z], "*"));
@@ -275,14 +254,9 @@ public class DocumentServiceImpl implements DocumentService {
             boolQueryBuilder.must(QueryBuilders.termsQuery("국가",requestDto.getCountry()));
         }
 
-        //1차 쿼리를 토대로한 2차쿼리
-//        searchSourceBuilder.postFilter(boolQueryBuilder1);
-
         searchRequest.source(searchSourceBuilder);
         List<Map<String, Object>> list = new ArrayList<>();
         SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
-        System.out.println(searchHits.getTotalHits());
-
 
         for (
                 SearchHit hit : searchHits) {

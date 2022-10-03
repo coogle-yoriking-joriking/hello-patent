@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SearchRequestDto {
+public class EnSearchRequestDto {
 
     private String[] contentType;
 
@@ -21,7 +21,6 @@ public class SearchRequestDto {
 
     private int page = 0;
 
-    private String patentType;
-
     private String[] country;
+
 }
