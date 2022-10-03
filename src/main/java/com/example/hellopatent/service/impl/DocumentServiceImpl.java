@@ -39,6 +39,7 @@ public class DocumentServiceImpl implements DocumentService {
     public List<Map<String, Object>> getKrPatent(SearchRequestDto requestDto) throws IOException {
 
         SearchRequest searchRequest = new SearchRequest(esProperties.getkrPatentIndexName());
+
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //제외방식 중첩?
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
@@ -84,7 +85,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             else if (isName) {
                 boolQueryBuilder
-                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭","발명의명칭.nori","발명의명칭.ngram"));
+                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭.lblank","발명의명칭","발명의명칭.nori","발명의명칭.ngram"));
 //                        .should(QueryBuilders.matchQuery("발명의명칭",requestDto.getContentValue()[i]).boost(3.0f).fuzziness(Fuzziness.ONE))
 //                        .must(QueryBuilders.matchQuery("발명의명칭.lblank",requestDto.getContentValue()[i]).boost(3.0f).fuzziness(Fuzziness.ONE))
 //                        .must(QueryBuilders.matchQuery("발명의명칭.nori",requestDto.getContentValue()[i]).boost(3.0f))
@@ -93,7 +94,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             else if (isSummary) {
                 boolQueryBuilder
-                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"요약","요약.nori"));
+                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"요약.lbank","요약.ngram","요약","요약.nori"));
 //                        .should(QueryBuilders.matchQuery("요약",requestDto.getContentValue()[i]).fuzziness(Fuzziness.ONE))
 //                        .should(QueryBuilders.matchQuery("요약.nori",requestDto.getContentValue()[i]));
             }
@@ -110,16 +111,24 @@ public class DocumentServiceImpl implements DocumentService {
                 boolean isEAll = Objects.equals(requestDto.getExceptType()[z], "전체");
                 boolean isPc = Objects.equals(requestDto.getExceptType()[z], "IPC/CPC분류");
                 boolean isYear = Objects.equals(requestDto.getExceptType()[z], "연도");
+                boolean isName = Objects.equals(requestDto.getExceptType()[z], "발명의명칭");
+                boolean isSummary = Objects.equals(requestDto.getExceptType()[z], "요약");
+
                 if (isENum) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
                             requestDto.getExceptValue()[z], "출원번호", "공개번호", "공고번호", "등록번호"));
                 } else if (isEAll) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
                             requestDto.getExceptValue()[z], "*"));
-                }else if (isPc) {
+                } else if (isName) {
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(requestDto.getExceptValue()[z],"발명의명칭.lblank","발명의명칭","발명의명칭.nori","발명의명칭.ngram"));
+                } else if (isSummary) {
+                    boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(requestDto.getExceptValue()[z],"요약.lbank","요약.ngram","요약","요약.nori"));
+                }
+                else if (isPc) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
                             requestDto.getExceptValue()[z], "IPC분류", "CPC분류"));
-                }else if (isYear) {
+                } else if (isYear) {
                     boolQueryBuilder.mustNot(QueryBuilders.matchQuery(
                             "출원일자",requestDto.getExceptValue()[z]));
                 }else {
@@ -151,7 +160,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
 
-
+        //페이지 네이션
         searchSourceBuilder.size(20);
         searchSourceBuilder.from((requestDto.getPage()-1) * 20);
 
@@ -175,6 +184,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override // 해외 조회
     public List<Map<String, Object>> getEnPatent(SearchRequestDto requestDto) throws IOException {
+
 
         SearchRequest searchRequest = new SearchRequest( esProperties.getenPatentIndexName(),esProperties.getjpPatentIndexName(),esProperties.getnotenPatentIndexName());
 

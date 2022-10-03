@@ -33,7 +33,7 @@ public class EsProperties {
     }
 
     public String getjpPatentIndexName() {
-        return Optional.ofNullable(indices).map(Indices::getPatentsIndexName).orElse(null);
+        return Optional.ofNullable(indices).map(Indices::getJp_patentsIndexName).orElse(null);
     }
 
     public String getTestIndexName() {
