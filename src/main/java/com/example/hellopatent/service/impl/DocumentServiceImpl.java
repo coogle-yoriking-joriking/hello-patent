@@ -184,18 +184,21 @@ public class DocumentServiceImpl implements DocumentService {
         List<KrResponseDto> list = new ArrayList<>();
         SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
         KrSearchResponseDto responseDto = new KrSearchResponseDto();
-        KrResponseDto krResponseDto = new KrResponseDto();
 
         String totalhits = searchHits.getTotalHits().toString();
         totalhits = totalhits.substring(0,totalhits.length()-5);
 
+        int pagetotal = (int) Math.ceil(Integer.parseInt(totalhits) / 20.0);
+
+        responseDto.setPagecount(Math.min(pagetotal, 500));
+
         responseDto.setTotalhits(totalhits);
-        responseDto.setPagecount((int) Math.ceil(Integer.parseInt(totalhits) / 20.0));
 
 
         for (
                 SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
+            KrResponseDto krResponseDto = new KrResponseDto();
             krResponseDto.set공개번호((String) sourceMap.get("공개번호"));
             krResponseDto.set출원번호((String) sourceMap.get("출원번호"));
             krResponseDto.set공고번호((String) sourceMap.get("공고번호"));
@@ -302,7 +305,6 @@ public class DocumentServiceImpl implements DocumentService {
             //국가 선택
             boolQueryBuilder.must(QueryBuilders.termsQuery("국가",requestDto.getCountry()));
         }
-        EnResponseDto enResponseDto = new EnResponseDto();
         EnSearchResponseDto enSearchResponseDto = new EnSearchResponseDto();
         List<EnResponseDto> list = new ArrayList<>();
 
@@ -313,10 +315,14 @@ public class DocumentServiceImpl implements DocumentService {
         totalhits = totalhits.substring(0,totalhits.length()-5);
 
         enSearchResponseDto.setTotalhits(totalhits);
-        enSearchResponseDto.setPagecount((int) Math.ceil(Integer.parseInt(totalhits) / 20.0));
+
+        int pagetotal = (int) Math.ceil(Integer.parseInt(totalhits) / 20.0);
+
+        enSearchResponseDto.setPagecount(Math.min(pagetotal, 500));
 
         for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
+            EnResponseDto enResponseDto = new EnResponseDto();
             enResponseDto.set공개번호((String) sourceMap.get("공개번호"));
             enResponseDto.set출원번호((String) sourceMap.get("출원번호"));
             enResponseDto.set공고번호((String) sourceMap.get("공고번호"));
