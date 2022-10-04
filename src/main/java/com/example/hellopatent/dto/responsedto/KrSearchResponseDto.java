@@ -10,6 +10,6 @@ import java.util.List;
 public class KrSearchResponseDto {
     private int pagecount;
     private String totalhits;
-    private List<KrResponseDto> response;
+    private List<KrResponseDto> patentres;
 
 }
