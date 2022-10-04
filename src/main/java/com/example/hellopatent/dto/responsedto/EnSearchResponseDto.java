@@ -11,5 +11,5 @@ public class EnSearchResponseDto {
     private int pagecount;
     private String totalhits;
 
-    private List<EnResponseDto> response;
+    private List<EnResponseDto> patentres;
 }

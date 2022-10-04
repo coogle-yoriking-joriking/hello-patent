@@ -212,7 +212,7 @@ public class DocumentServiceImpl implements DocumentService {
             krResponseDto.set출원인((String) sourceMap.get("출원인"));
             list.add(krResponseDto);
         }
-        responseDto.setResponse(list);
+        responseDto.setPatentres(list);
 
         return responseDto;
 
@@ -336,7 +336,7 @@ public class DocumentServiceImpl implements DocumentService {
             enResponseDto.set출원인((String) sourceMap.get("출원인"));
             list.add(enResponseDto);
         }
-        enSearchResponseDto.setResponse(list);
+        enSearchResponseDto.setPatentres(list);
         return enSearchResponseDto;
 
     }
