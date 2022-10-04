@@ -1,8 +1,12 @@
 package com.example.hellopatent.service.impl;
 
 import com.example.hellopatent.config.EsProperties;
-import com.example.hellopatent.dto.EnSearchRequestDto;
-import com.example.hellopatent.dto.KrSearchRequestDto;
+import com.example.hellopatent.dto.responsedto.EnResponseDto;
+import com.example.hellopatent.dto.requestdto.EnSearchRequestDto;
+import com.example.hellopatent.dto.responsedto.EnSearchResponseDto;
+import com.example.hellopatent.dto.requestdto.KrSearchRequestDto;
+import com.example.hellopatent.dto.responsedto.KrResponseDto;
+import com.example.hellopatent.dto.responsedto.KrSearchResponseDto;
 import com.example.hellopatent.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +24,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 @Slf4j
@@ -32,12 +33,37 @@ import java.util.Objects;
 public class DocumentServiceImpl implements DocumentService {
     private final RestHighLevelClient client;
     private final EsProperties esProperties;
-
-
+    private final static HashMap<String,String> nation = new HashMap<>() {{//초기값 지정
+        put("US", "미국");
+        put("EP", "유럽");
+        put("WO", "PCT");
+        put("JP", "일본");
+        put("CN", "중국");
+        put("GB", "영국");
+        put("DE", "독일");
+        put("FR", "프랑스");
+        put("AU", "호주");
+        put("CA", "캐나다");
+        put("RU", "러시아");
+        put("TW", "대만");
+        put("AT", "오스트리아");
+        put("DK", "덴마크");
+        put("IL", "이스라엘");
+        put("ES", "스페인");
+        put("PT", "포르투갈");
+        put("PH", "필리핀");
+        put("CH", "스위스");
+        put("PL", "폴란드");
+        put("SE", "스웨덴");
+        put("SI", "슬로베니아");
+        put("CO", "콜롬비아");
+        put("EA", "유라시아");
+        put("RS", "세르비아");
+    }};
 
 
     @Override // 국내 조회
-    public List<Map<String, Object>> getKrPatent(KrSearchRequestDto requestDto) throws IOException {
+    public KrSearchResponseDto getKrPatent(KrSearchRequestDto requestDto) throws IOException {
 
         SearchRequest searchRequest = new SearchRequest(esProperties.getkrPatentIndexName());
 
@@ -152,23 +178,45 @@ public class DocumentServiceImpl implements DocumentService {
         searchSourceBuilder.from((requestDto.getPage()-1) * 20);
 
         searchSourceBuilder.query(boolQueryBuilder);
-
+        searchSourceBuilder.trackTotalHits(true);
         searchRequest.source(searchSourceBuilder);
 
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<KrResponseDto> list = new ArrayList<>();
         SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
-        System.out.println(searchHits.getTotalHits());
+        KrSearchResponseDto responseDto = new KrSearchResponseDto();
+        KrResponseDto krResponseDto = new KrResponseDto();
+
+        String totalhits = searchHits.getTotalHits().toString();
+        totalhits = totalhits.substring(0,totalhits.length()-5);
+
+        responseDto.setTotalhits(totalhits);
+        responseDto.setPagecount((int) Math.ceil(Integer.parseInt(totalhits) / 20.0));
+
+
         for (
                 SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            list.add(sourceMap);
+            krResponseDto.set공개번호((String) sourceMap.get("공개번호"));
+            krResponseDto.set출원번호((String) sourceMap.get("출원번호"));
+            krResponseDto.set공고번호((String) sourceMap.get("공고번호"));
+            krResponseDto.set등록번호((String) sourceMap.get("등록번호"));
+            krResponseDto.set출원일자((String) sourceMap.get("출원일자"));
+            krResponseDto.setIPC분류((String) sourceMap.get("IPC분류"));
+            krResponseDto.setCPC분류((String) sourceMap.get("CPC분류"));
+            krResponseDto.set법적상태((String) sourceMap.get("법적상태"));
+            krResponseDto.set요약((String) sourceMap.get("요약"));
+            krResponseDto.set발명의명칭((String) sourceMap.get("발명의명칭"));
+            krResponseDto.set출원인((String) sourceMap.get("출원인"));
+            list.add(krResponseDto);
         }
-        return list;
+        responseDto.setResponse(list);
+
+        return responseDto;
 
     }
 
     @Override // 해외 조회
-    public List<Map<String, Object>> getEnPatent(EnSearchRequestDto requestDto) throws IOException {
+    public EnSearchResponseDto getEnPatent(EnSearchRequestDto requestDto) throws IOException {
 
 
         SearchRequest searchRequest = new SearchRequest( esProperties.getenPatentIndexName(),esProperties.getjpPatentIndexName(),esProperties.getnotenPatentIndexName());
@@ -244,6 +292,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         //페이지 네이션
         searchSourceBuilder.size(20);
+        searchSourceBuilder.trackTotalHits(true);
         searchSourceBuilder.from((requestDto.getPage()-1) * 20);
 
         //1차 쿼리
@@ -253,17 +302,36 @@ public class DocumentServiceImpl implements DocumentService {
             //국가 선택
             boolQueryBuilder.must(QueryBuilders.termsQuery("국가",requestDto.getCountry()));
         }
+        EnResponseDto enResponseDto = new EnResponseDto();
+        EnSearchResponseDto enSearchResponseDto = new EnSearchResponseDto();
+        List<EnResponseDto> list = new ArrayList<>();
 
         searchRequest.source(searchSourceBuilder);
-        List<Map<String, Object>> list = new ArrayList<>();
-        SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
 
-        for (
-                SearchHit hit : searchHits) {
+        SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
+        String totalhits = searchHits.getTotalHits().toString();
+        totalhits = totalhits.substring(0,totalhits.length()-5);
+
+        enSearchResponseDto.setTotalhits(totalhits);
+        enSearchResponseDto.setPagecount((int) Math.ceil(Integer.parseInt(totalhits) / 20.0));
+
+        for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
-            list.add(sourceMap);
+            enResponseDto.set공개번호((String) sourceMap.get("공개번호"));
+            enResponseDto.set출원번호((String) sourceMap.get("출원번호"));
+            enResponseDto.set공고번호((String) sourceMap.get("공고번호"));
+            enResponseDto.set등록번호((String) sourceMap.get("등록번호"));
+            enResponseDto.set출원일자((String) sourceMap.get("출원일자"));
+            enResponseDto.setIPC분류((String) sourceMap.get("IPC분류"));
+            enResponseDto.setCPC분류((String) sourceMap.get("CPC분류"));
+            enResponseDto.set국가(nation.get(sourceMap.get("국가")));
+            enResponseDto.set요약((String) sourceMap.get("요약"));
+            enResponseDto.set발명의명칭((String) sourceMap.get("발명의명칭"));
+            enResponseDto.set출원인((String) sourceMap.get("출원인"));
+            list.add(enResponseDto);
         }
-        return list;
+        enSearchResponseDto.setResponse(list);
+        return enSearchResponseDto;
 
     }
 
