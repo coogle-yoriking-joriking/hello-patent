@@ -15,8 +15,6 @@ public class EnSearchRequestDto {
 
     private String[] exceptValue;
 
-    private String[] statusType;
-
     private String sortType;
 
     private int page = 0;
