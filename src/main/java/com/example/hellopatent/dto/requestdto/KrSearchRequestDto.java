@@ -1,11 +1,11 @@
-package com.example.hellopatent.dto;
+package com.example.hellopatent.dto.requestdto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class EnSearchRequestDto {
+public class KrSearchRequestDto {
 
     private String[] contentType;
 
@@ -19,8 +19,8 @@ public class EnSearchRequestDto {
 
     private String sortType;
 
-    private int page = 0;
+    private  int page = 0;
 
-    private String[] country;
+    private String patentType;
 
 }
