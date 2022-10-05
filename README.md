@@ -28,17 +28,13 @@
   - 해외 특허 검색의 경우, 국가별 체크박스를 통해 검색 결과를 필터링 할 수 있습니다.
 - **정렬** : 정확도순/최신순/오래된순 정렬이 가능합니다.
 
-## 🧾 API
-
-
 ## 📽 시연 영상
   
-[HELLO-PATENT Demonstration Video](https://www.youtube.com/watch?v=rFAQniWz5fI)
+[HELLO-PATENT Demonstration Video]()
 
 
 ## ⚡트러블 슈팅
-
-[wiki - 트러블 슈팅 모음집]()
+[안녕, 특허 WIKI](https://github.com/coogle-yoriking-joriking/hello-patent/wiki) > ⚡ 트러블 슈팅
 
 ## 팀원소개
 | Name                 | GitHub / Contact                                      | Position    |
