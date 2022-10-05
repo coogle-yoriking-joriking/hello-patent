@@ -4,47 +4,113 @@ div {
 	margin: 0;
 	padding: 0;
 }
-
 body {
 	width: 100vw;
 	height: 100vh;
 	overflow: overlay;
 }
-
 button:hover {
 	cursor: pointer;
 }
-
 ::selection {
 	background-color: #00000010;
+}
+ul {
+	list-style: none;
+	padding-left: 0px;
+}
+em {
+	background-color: #ffffaf;
+	font-style: normal;
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: gray;
+    
+    border-radius: 10px;
+	background-clip: padding-box;
+	border: 3px solid transparent;
+}
+
+::-webkit-scrollbar-track {
+    background: #00000010;
 }
 
 /* 버튼 */
 .color-button {
-	background-color: #ff7e52;
-	color: white;
+	background-color: #afdcf9;
+	border: 1px solid #82c5f1;
+}
+.color-button:hover {
+	background-color: #82c5f1;
 }
 
-.color-button:hover {
-	background-color: #f05b28;
+.dark-color-button {
+	background-color: #3995d0;
+	border: 1px solid #82c5f1;
+	color: white;
+}
+.dark-color-button:hover {
+	background-color: #5bafe5;
+}
+
+.color-border-button {
+	background: #ffffff2a;
+	border: 1px solid #3995d0;
+	color: #3995d0;
+}
+.color-border-button:hover {
+	background-color: #00000010;
 }
 
 .white-button {
 	background-color: white;
 }
-
 .white-button:hover {
 	background-color: #00000010;
 }
 
-.color-border-button {
-	background: none;
-	border: 1px solid #3995d0;
-	color: #3995d0;
+/* 체크박스 */
+input[type=checkbox] {
+	display: none;
 }
+.custom-checkbox {
+	width: 12px;
+	height: 12px;
+	border: 1px solid #dddddd;
+	border-radius: 2px;
+	margin: 3px;
+}
+input:checked + .custom-checkbox  {
+	border: 1px solid white;
+	background: url("https://cdn-icons-png.flaticon.com/512/17/17153.png") no-repeat center / contain;
+}
+/* 툴팁 */
+.tooltip {
+	display: inline-block;
+}
+.tooltip-text {
+	display: none;
+	position: absolute;
 
-.color-border-button:hover {
-	background-color: #00000010;
+	max-width: 500px;
+	padding: 5px;
+	margin-top: 5px;
+
+	background: white;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+
+	font-size: 0.8em;
+	color: gray;
+}
+.tooltip:hover .tooltip-text {
+	display: block;
 }
 
 /* 상단바 */
@@ -80,7 +146,7 @@ button:hover {
 /* 모달창 */
 .modal-background {
 	position: fixed;
-	background-color: rgba(0, 0, 0, 0.50);
+	background-color: #00000040;
 	top: 0;
 	right: 0;
 	bottom: 0;
@@ -102,28 +168,43 @@ button:hover {
 
 .modal.on {
 	display: flex;
+	z-index: 30;
 }
 
 .modal-card {
-	background-color: white;
+    overflow-y: auto;
+	position: relative;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
 	align-items: center;
-	position: relative;
-	width: 400px;
-	height: 500px;
+
+	width: 900px;
+	max-height: calc(100vh - 210px);
+	padding: 50px;
+
+	background-color: white;
 	border-radius: 10px;
 	box-shadow: 0 0 20px 0 darkslategrey;
 }
-
-.id-password {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
+.modal-card > div {
 	width: 100%;
-	margin: 40px 0;
+}
+
+.info-ipc li {
+	margin-right: 5px;
+}
+.code-img {
+	width: 100px;
+	opacity: 0.3;
+}
+.code-img:hover {
+	opacity: 1;
+}
+
+.code-title-txt {
+	color: gray;
+	font-size: 0.8rem;
+	font-weight: bold;
 }
 
 .id-password textarea {

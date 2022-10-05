@@ -15,4 +15,62 @@
 	<input type="text" id="search-input" placeholder="찾고싶은 키워드를 입력해주세요">
 	<button class="search-button"></button>
 </div>
+
+<!-- 용어 설명 모달창 -->
+<div class="modal" id="info" th:fragment="infoModalFragment">
+	<div class="modal-background" onclick='$(this).parent().removeClass("on")'></div>
+	<div class="modal-card">
+		<h2>용어 설명</h2>
+		<div class="info-ipc">
+			<h3>IPC 국제특허분류</h3>
+			<span>국제적으로 통일화된 특허문헌의 분류체계</span>
+			<ul style="display: flex;">
+				<li class="li_ipc_A">
+					<img class="code-img" src="/img/ipcA.png" alt="IPC코드 A"> 
+					<div class="code-title-txt">생활필수품</div>
+				</li>
+				<li class="li_ipc_B">
+					<img class="code-img" src="/img/ipcB.png" alt="IPC코드 B"> 
+					<div class="code-title-txt">처리조작·운수</div>
+				</li>
+				<li class="li_ipc_C">
+					<img class="code-img" src="/img/ipcC.png" alt="IPC코드 C"> 
+					<div class="code-title-txt">화학·야금</div>
+				</li>
+				<li class="li_ipc_D">
+					<img class="code-img" src="/img/ipcD.png" alt="IPC코드 D"> 
+					<div class="code-title-txt">섬유·지류</div>
+				</li>
+				<li class="li_ipc_E">
+					<img class="code-img" src="/img/ipcE.png" alt="IPC코드 E"> 
+					<div class="code-title-txt">고정구조물</div>
+				</li>
+				<li class="li_ipc_F">
+					<img class="code-img" src="/img/ipcF.png" alt="IPC코드 F"> 
+					<div class="code-title-txt">기계공학·조명<br>·가열·무기·폭파</div>
+				</li>
+				<li class="li_ipc_G">
+					<img class="code-img" src="/img/ipcG.png" alt="IPC코드 G"> 
+					<div class="code-title-txt">물리학</div>
+				</li>
+				<li class="li_ipc_H">
+					<img class="code-img" src="/img/ipcH.png" alt="IPC코드 H"> 
+					<div class="code-title-txt">전기</div>
+				</li>
+			</ul>
+		</div>
+		<div class="info-cpc">
+			<h3>CPC 협력적 특허분류</h3>
+			<span>국제특허분류를 세분화한 특허분류 체계</span>
+		</div>
+		<div class="info-num">
+			<h3>번호구분</h3>
+			<span>**출원번호** : 특허청에 출원서를 접수 할 때 부여되는 번호</span><br>
+			<span>**공개번호** : 출원인의 조기공개신청 및 출원공개제도* 에 따라 공개될 때 부여되는 번호</span><br>
+			<span>＊특허 출원후 1년 6개월 경과시 또는 디자인 출원의 설정등록시</span><br>
+			<span>**공고번호** : (출원 또는 등록이 있을 때) 이에 대한 사항을 공보에 공고할 경우 부여되는 번호</span><br>
+			<span>**등록번호** : 심사 후 등록 결정이 되면 등록료를 납부하여 최종적으로 권리를 받을 때 부여되는 번호</span>
+		</div>
+	</div>
+</div>
 </html>
