@@ -24,6 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'co.elastic.clients:elasticsearch-java:8.4.1'
     implementation 'org.springframework.data:spring-data-elasticsearch'
+    implementation 'org.testng:testng:7.1.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
 
