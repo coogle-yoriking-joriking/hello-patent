@@ -99,11 +99,12 @@ public class DocumentServiceImpl implements DocumentService {
                         "출원일자",requestDto.getContentValue()[i]));
             }
             else if (isName) {
-                boolQueryBuilder.must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭*"));
+                boolQueryBuilder.must(QueryBuilders.multiMatchQuery(
+                        requestDto.getContentValue()[i],"발명의명칭*"));
             }
             else if (isSummary) {
-                boolQueryBuilder
-                        .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"요약*"));
+                boolQueryBuilder.must(QueryBuilders.multiMatchQuery(
+                        requestDto.getContentValue()[i],"요약*"));
             }
             else {
                 boolQueryBuilder.must(QueryBuilders.matchQuery(
@@ -148,6 +149,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
 
+
         // 법적 상태
         if (requestDto.getStatusType() != null) {
                 boolQueryBuilder.must(QueryBuilders.termsQuery("법적상태", requestDto.getStatusType()));
@@ -163,57 +165,37 @@ public class DocumentServiceImpl implements DocumentService {
             ));
         }
 
-        if(Objects.equals(requestDto.getSortType(), "최신순")) {
-            searchSourceBuilder.sort("출원일자.keyword", SortOrder.DESC);
-        } else if (Objects.equals(requestDto.getSortType(), "오래된순")) {
-            searchSourceBuilder.sort("출원일자.keyword",SortOrder.ASC);
-        }
-
-
-        //페이지 네이션
-        searchSourceBuilder.size(20);
-        searchSourceBuilder.from((requestDto.getPage()-1) * 20);
+        searchKrOrder(requestDto, searchSourceBuilder);
 
         searchSourceBuilder.query(boolQueryBuilder);
-        searchSourceBuilder.trackTotalHits(true);
+
         searchRequest.source(searchSourceBuilder);
 
-        List<KrResponseDto> list = new ArrayList<>();
         SearchHits searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
-        KrSearchResponseDto responseDto = new KrSearchResponseDto();
+        KrSearchResponseDto searchResponseDto = new KrSearchResponseDto();
+
+        List<KrResponseDto> list = new ArrayList<>();
 
         String totalhits = searchHits.getTotalHits().toString();
         totalhits = totalhits.substring(0,totalhits.length()-5);
 
         int pagetotal = (int) Math.ceil(Integer.parseInt(totalhits) / 20.0);
 
-        responseDto.setPagecount(Math.min(pagetotal, 500));
+        searchResponseDto.setPagecount(Math.min(pagetotal, 500));
 
-        responseDto.setTotalhits(totalhits);
+        searchResponseDto.setTotalhits(totalhits);
+
+        makeKrRes(searchHits, list);
+
+        searchResponseDto.setPatentres(list);
 
 
-        for (
-                SearchHit hit : searchHits) {
-            Map<String, Object> sourceMap = hit.getSourceAsMap();
-            KrResponseDto krResponseDto = new KrResponseDto();
-            krResponseDto.set공개번호((String) sourceMap.get("공개번호"));
-            krResponseDto.set출원번호((String) sourceMap.get("출원번호"));
-            krResponseDto.set공고번호((String) sourceMap.get("공고번호"));
-            krResponseDto.set등록번호((String) sourceMap.get("등록번호"));
-            krResponseDto.set출원일자((String) sourceMap.get("출원일자"));
-            krResponseDto.setIPC분류((String) sourceMap.get("IPC분류"));
-            krResponseDto.setCPC분류((String) sourceMap.get("CPC분류"));
-            krResponseDto.set법적상태((String) sourceMap.get("법적상태"));
-            krResponseDto.set요약((String) sourceMap.get("요약"));
-            krResponseDto.set발명의명칭((String) sourceMap.get("발명의명칭"));
-            krResponseDto.set출원인((String) sourceMap.get("출원인"));
-            list.add(krResponseDto);
-        }
-        responseDto.setPatentres(list);
 
-        return responseDto;
+        return searchResponseDto;
 
     }
+
+
 
     @Override // 해외 조회
     public EnSearchResponseDto getEnPatent(EnSearchRequestDto requestDto) throws IOException {
@@ -270,7 +252,7 @@ public class DocumentServiceImpl implements DocumentService {
                             requestDto.getExceptValue()[z], "*"));
                 }else if (isPc) {
                     boolQueryBuilder.mustNot(QueryBuilders.multiMatchQuery(
-                            requestDto.getExceptValue()[z], "IPC분류", "CPC분류"));
+                            requestDto.getExceptValue()[z], "*분류"));
                 }else if (isYear) {
                     boolQueryBuilder.mustNot(QueryBuilders.matchQuery(
                             "출원일자",requestDto.getExceptValue()[z]));
@@ -282,19 +264,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 
         //정렬
-        if(Objects.equals(requestDto.getSortType(), "최신순")) {
-            searchSourceBuilder.sort("출원일자.keyword", SortOrder.DESC);
-        } else if (Objects.equals(requestDto.getSortType(), "오래된순")) {
-            searchSourceBuilder.sort("출원일자.keyword",SortOrder.ASC);
-        }
-
-
-
-        //페이지 네이션
-        searchSourceBuilder.size(20);
-        searchSourceBuilder.trackTotalHits(true);
-        searchSourceBuilder.from((requestDto.getPage()-1) * 20);
-
+        searchEnOrder(requestDto, searchSourceBuilder);
 
         //1차 쿼리
         searchSourceBuilder.query(boolQueryBuilder);
@@ -303,6 +273,7 @@ public class DocumentServiceImpl implements DocumentService {
             //국가 선택
             boolQueryBuilder.must(QueryBuilders.termsQuery("국가",requestDto.getCountry()));
         }
+
         EnSearchResponseDto enSearchResponseDto = new EnSearchResponseDto();
         List<EnResponseDto> list = new ArrayList<>();
 
@@ -318,6 +289,31 @@ public class DocumentServiceImpl implements DocumentService {
 
         enSearchResponseDto.setPagecount(Math.min(pagetotal, 500));
 
+        makeEnRes(list, searchHits);
+        enSearchResponseDto.setPatentres(list);
+        return enSearchResponseDto;
+
+    }
+
+    private void makeKrRes(SearchHits searchHits, List<KrResponseDto> list) {
+        for (SearchHit hit : searchHits) {
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            KrResponseDto krResponseDto = new KrResponseDto();
+            krResponseDto.set공개번호((String) sourceMap.get("공개번호"));
+            krResponseDto.set출원번호((String) sourceMap.get("출원번호"));
+            krResponseDto.set공고번호((String) sourceMap.get("공고번호"));
+            krResponseDto.set등록번호((String) sourceMap.get("등록번호"));
+            krResponseDto.set출원일자((String) sourceMap.get("출원일자"));
+            krResponseDto.setIPC분류((String) sourceMap.get("IPC분류"));
+            krResponseDto.setCPC분류((String) sourceMap.get("CPC분류"));
+            krResponseDto.set법적상태((String) sourceMap.get("법적상태"));
+            krResponseDto.set요약((String) sourceMap.get("요약"));
+            krResponseDto.set발명의명칭((String) sourceMap.get("발명의명칭"));
+            krResponseDto.set출원인((String) sourceMap.get("출원인"));
+            list.add(krResponseDto);
+        }
+    }
+    private void makeEnRes(List<EnResponseDto> list, SearchHits searchHits) {
         for (SearchHit hit : searchHits) {
             Map<String, Object> sourceMap = hit.getSourceAsMap();
             EnResponseDto enResponseDto = new EnResponseDto();
@@ -334,10 +330,34 @@ public class DocumentServiceImpl implements DocumentService {
             enResponseDto.set출원인((String) sourceMap.get("출원인"));
             list.add(enResponseDto);
         }
-        enSearchResponseDto.setPatentres(list);
-        return enSearchResponseDto;
-
     }
+    private void searchEnOrder(EnSearchRequestDto requestDto, SearchSourceBuilder searchSourceBuilder) {
+        if(Objects.equals(requestDto.getSortType(), "최신순")) {
+            searchSourceBuilder.sort("출원일자.keyword", SortOrder.DESC);
+        } else if (Objects.equals(requestDto.getSortType(), "오래된순")) {
+            searchSourceBuilder.sort("출원일자.keyword",SortOrder.ASC);
+        }
+
+        //페이지 네이션
+        searchSourceBuilder.size(20);
+        searchSourceBuilder.trackTotalHits(true);
+        searchSourceBuilder.from((requestDto.getPage()-1) * 20);
+    }
+    private void searchKrOrder(KrSearchRequestDto requestDto, SearchSourceBuilder searchSourceBuilder) {
+        if(Objects.equals(requestDto.getSortType(), "최신순")) {
+            searchSourceBuilder.sort("출원일자.keyword", SortOrder.DESC);
+        } else if (Objects.equals(requestDto.getSortType(), "오래된순")) {
+            searchSourceBuilder.sort("출원일자.keyword",SortOrder.ASC);
+        }
+
+
+        //페이지 네이션
+        searchSourceBuilder.size(20);
+        searchSourceBuilder.from((requestDto.getPage()-1) * 20);
+
+        searchSourceBuilder.trackTotalHits(true);
+    }
+
 
 
 

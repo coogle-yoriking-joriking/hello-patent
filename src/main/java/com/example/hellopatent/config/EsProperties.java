@@ -36,10 +36,6 @@ public class EsProperties {
         return Optional.ofNullable(indices).map(Indices::getJp_patentsIndexName).orElse(null);
     }
 
-    public String getTestIndexName() {
-        return Optional.ofNullable(indices).map(Indices::getTestIndexName).orElse(null);
-    }
-
 
     @Getter
     @Setter
@@ -49,8 +45,6 @@ public class EsProperties {
         String jp_patentsIndexName;
         String en_patentsIndexName;
         String noten_patentsIndexName;
-
-        String testIndexName;
     }
 
 
