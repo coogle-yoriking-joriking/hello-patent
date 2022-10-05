@@ -8,10 +8,10 @@ import com.example.hellopatent.dto.responsedto.KrSearchResponseDto;
 import java.io.IOException;
 
 public interface DocumentService {
-    // 필드별 조회
+    // 해외권 조회
     EnSearchResponseDto getEnPatent(EnSearchRequestDto requestDto) throws IOException;
 
-    //    List<String> getSearch() throws IOException;
+    //  국내 조회
     KrSearchResponseDto getKrPatent(KrSearchRequestDto requestDto) throws IOException;
 
 
