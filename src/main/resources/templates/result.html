@@ -6,10 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>안녕, 특허</title>
+    <meta property="og:title" content="안녕, 특허"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="/img/hellopatent_colorlogo.png"/>
+    <meta property="og:description" content="초보자를 위한 특허 검색 서비스"/>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
     <link href="/css/index.css" rel="stylesheet">
-
 </head>
 <style>
     #top-button {
@@ -427,28 +430,28 @@
                     $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다. 😂</h2>');
                     return;
                 }
-                $("#pagenation").before(`<div style="width: 900px;margin-top: 30px;color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
+                $("#pagenation").before(`<div style="width: 900px; margin-top: 30px; color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
                 for (let i = 0; i < patent.length; i++) {
                     let card = patent[i];
+                    let title = (card["발명의명칭"] != null) ? card["발명의명칭"] : "제목이 없습니다";
+                    let applicant = (card["출원인"] != null) ? card["출원인"] : "출원인이 없습니다";
                     let application_number = card["출원번호"].replace(/-/g, "");
-                    let ipc = card["ipc분류"].split("|");
+                    let ipc = (card["ipc분류"] != null) ? card["ipc분류"].split("|") : "IPC가 없습니다";
                     let status = card["법적상태"];
-                    if (status == "소멸 (등록료불납)" || status == "소멸 (존속기간만료)") {
-                        status = "소멸";
-                    }
+                    if (status == "소멸 (등록료불납)" || status == "소멸 (존속기간만료)") status = "소멸";
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
                     let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
 										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
 										<div class="card-content">
-											<div class="card-title">${card["발명의명칭"]}</div>
+											<div class="card-title">${title}</div>
 											<div class="card-app">
 												<div class="card-info">출원번호</div>
 												<div>${card["출원번호"]} (${card["출원일자"]})</div>
 											</div>
 											<div class="card-applicant">
 												<div class="card-info">출원인</div>
-												<div class="card-notinfo">${card["출원인"]}</div>
+												<div class="card-notinfo">${applicant}</div>
 											</div>
 											<div class="card-status">
 												<div class="card-info">행정상태</div>
@@ -481,25 +484,27 @@
                     $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다. 😂</h2>');
                     return;
                 }
-                $("#pagenation").before(`<div style="width: 900px;margin-top: 30px;color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
+                $("#pagenation").before(`<div style="width: 900px; margin-top: 30px; color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
                 for (let i = 0; i < patent.length; i++) {
                     let card = patent[i];
+                    let title = (card["발명의명칭"] != null) ? card["발명의명칭"] : "제목이 없습니다";
+                    let applicant = (card["출원인"] != null) ? card["출원인"] : "출원인이 없습니다";
                     let application_number = card["출원번호"].replace(/-/g, "");
                     let country = card["국가"].split(",");
-                    let ipc = card["ipc분류"].split(",");
+                    let ipc = (card["ipc분류"] != null) ? card["ipc분류"].split(",") : "IPC가 없습니다";
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
                     let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
 										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
 										<div class="card-content">
-											<div class="card-title">${card["발명의명칭"]}</div>
+											<div class="card-title">${title}</div>
 											<div class="card-app">
 												<div class="card-info">출원번호</div>
-												<div>${card["출원번호"]} (${card["출원일자"]})</div>
+												<div>${card["출원번호"]}(${card["출원일자"]})</div>
 											</div>
 											<div class="card-applicant">
 												<div class="card-info">출원인</div>
-												<div class="card-notinfo">${card["출원인"]}</div>
+												<div class="card-notinfo">${applicant}</div>
 											</div>
 											<div class="card-status">
 												<div class="card-info">국가</div>
@@ -620,124 +625,52 @@
                 <div class="korean">
                     <h2 style="color: #3995d0;">권리구분</h2>
                     <div class="select-filter">
-                        <label style="grid-column-start: 1; grid-column-end: 3;"><input type="checkbox" value="특허"
-                                checked>
-                            <div class="custom-checkbox"></div>특허
-                        </label>
-                        <label><input type="checkbox" value="실용" checked>
-                            <div class="custom-checkbox"></div>실용
-                        </label>
+                        <label style="grid-column-start: 1; grid-column-end: 3;"><input type="checkbox" value="특허"checked>
+                            <div class="custom-checkbox"></div>특허</label>
+                        <label><input type="checkbox" value="실용" checked><div class="custom-checkbox"></div>실용</label>
                     </div>
                     <h2 style="color: #3995d0;">행정상태</h2>
                     <div class="select-filter" id="select-status">
-                        <label><input type="checkbox" name="select-all" checked>
-                            <div class="custom-checkbox"></div>전체
-                        </label>
-                        <label><input type="checkbox" name="select" value="거절" checked>
-                            <div class="custom-checkbox"></div>거절
-                        </label>
-                        <label><input type="checkbox" name="select" value="등록" checked>
-                            <div class="custom-checkbox"></div>등록
-                        </label>
-                        <label><input type="checkbox" name="select" value="소멸 (등록료불납)" checked>
-                            <div class="custom-checkbox"></div>소멸
-                        </label>
-                        <label><input type="checkbox" name="select" value="무효" checked>
-                            <div class="custom-checkbox"></div>무효
-                        </label>
-                        <label><input type="checkbox" name="select" value="취하" checked>
-                            <div class="custom-checkbox"></div>취하
-                        </label>
-                        <label><input type="checkbox" name="select" value="포기" checked>
-                            <div class="custom-checkbox"></div>포기
-                        </label>
-                        <label><input type="checkbox" name="select" value="공개" checked>
-                            <div class="custom-checkbox"></div>공개
-                        </label>
+                        <label><input type="checkbox" name="select-all" checked><div class="custom-checkbox"></div>전체</label>
+                        <label><input type="checkbox" name="select" value="거절" checked><div class="custom-checkbox"></div>거절</label>
+                        <label><input type="checkbox" name="select" value="등록" checked><div class="custom-checkbox"></div>등록</label>
+                        <label><input type="checkbox" name="select" value="소멸 (등록료불납)" checked><div class="custom-checkbox"></div>소멸</label>
+                        <label><input type="checkbox" name="select" value="무효" checked><div class="custom-checkbox"></div>무효</label>
+                        <label><input type="checkbox" name="select" value="취하" checked><div class="custom-checkbox"></div>취하</label>
+                        <label><input type="checkbox" name="select" value="포기" checked><div class="custom-checkbox"></div>포기</label>
+                        <label><input type="checkbox" name="select" value="공개" checked><div class="custom-checkbox"></div>공개</label>
                     </div>
                 </div>
                 <div class="foreign" style="display: none;">
                     <h2 style="color: #3995d0;">국가</h2>
-                    <label style="cursor: pointer; display: flex; margin-bottom: 5px;"><input type="checkbox"
-                            name="select-all" checked>
-                        <div class="custom-checkbox"></div>전체
-                    </label>
+                    <label style="cursor: pointer; display: flex; margin-bottom: 10px;"><input type="checkbox"
+                            name="select-all" checked><div class="custom-checkbox"></div>전체</label>
                     <div class="select-filter" id="select-country">
-                        <label><input type="checkbox" name="select" value="미국" checked>
-                            <div class="custom-checkbox"></div>미국
-                        </label>
-                        <label><input type="checkbox" name="select" value="유럽" checked>
-                            <div class="custom-checkbox"></div>유럽
-                        </label>
-                        <label><input type="checkbox" name="select" value="PCT" checked>
-                            <div class="custom-checkbox"></div>PCT
-                        </label>
-                        <label><input type="checkbox" name="select" value="일본" checked>
-                            <div class="custom-checkbox"></div>일본
-                        </label>
-                        <label><input type="checkbox" name="select" value="중국" checked>
-                            <div class="custom-checkbox"></div>중국
-                        </label>
-                        <label><input type="checkbox" name="select" value="영국" checked>
-                            <div class="custom-checkbox"></div>영국
-                        </label>
-                        <label><input type="checkbox" name="select" value="독일" checked>
-                            <div class="custom-checkbox"></div>독일
-                        </label>
-                        <label><input type="checkbox" name="select" value="프랑스" checked>
-                            <div class="custom-checkbox"></div>프랑스
-                        </label>
-                        <label><input type="checkbox" name="select" value="호주" checked>
-                            <div class="custom-checkbox"></div>호주
-                        </label>
-                        <label><input type="checkbox" name="select" value="캐나다" checked>
-                            <div class="custom-checkbox"></div>캐나다
-                        </label>
-                        <label><input type="checkbox" name="select" value="대만" checked>
-                            <div class="custom-checkbox"></div>대만
-                        </label>
-                        <label><input type="checkbox" name="select" value="이스라엘" checked>
-                            <div class="custom-checkbox"></div>이스라엘
-                        </label>
-                        <label><input type="checkbox" name="select" value="스페인" checked>
-                            <div class="custom-checkbox"></div>스페인
-                        </label>
-                        <label><input type="checkbox" name="select" value="필리핀" checked>
-                            <div class="custom-checkbox"></div>필리핀
-                        </label>
-                        <label><input type="checkbox" name="select" value="스웨덴" checked>
-                            <div class="custom-checkbox"></div>스웨덴
-                        </label>
-                        <label><input type="checkbox" name="select" value="러시아" checked>
-                            <div class="custom-checkbox"></div>러시아
-                        </label>
-                        <label><input type="checkbox" name="select" value="덴마크" checked>
-                            <div class="custom-checkbox"></div>덴마크
-                        </label>
-                        <label><input type="checkbox" name="select" value="포르투갈" checked>
-                            <div class="custom-checkbox"></div>포르투갈
-                        </label>
-                        <label><input type="checkbox" name="select" value="스위스" checked>
-                            <div class="custom-checkbox"></div>스위스
-                        </label>
-                        <label><input type="checkbox" name="select" value="폴란드" checked>
-                            <div class="custom-checkbox"></div>폴란드
-                        </label>
-                        <label><input type="checkbox" name="select" value="슬로베니아" checked>
-                            <div class="custom-checkbox"></div>슬로베니아
-                        </label>
-                        <label><input type="checkbox" name="select" value="콜롬비아" checked>
-                            <div class="custom-checkbox"></div>콜롬비아
-                        </label>
-                        <label><input type="checkbox" name="select" value="유라시아" checked>
-                            <div class="custom-checkbox"></div>유라시아
-                        </label>
-                        <label><input type="checkbox" name="select" value="세르비아" checked>
-                            <div class="custom-checkbox"></div>세르비아
-                        </label>
-                        <label><input type="checkbox" name="select" value="오스트리아" checked>
-                            <div class="custom-checkbox"></div>오스트리아
-                        </label>
+                        <label><input type="checkbox" name="select" value="미국" checked><div class="custom-checkbox"></div>미국</label>
+                        <label><input type="checkbox" name="select" value="유럽" checked><div class="custom-checkbox"></div>유럽</label>
+                        <label><input type="checkbox" name="select" value="PCT" checked><div class="custom-checkbox"></div>PCT</label>
+                        <label><input type="checkbox" name="select" value="일본" checked><div class="custom-checkbox"></div>일본</label>
+                        <label><input type="checkbox" name="select" value="중국" checked><div class="custom-checkbox"></div>중국</label>
+                        <label><input type="checkbox" name="select" value="영국" checked><div class="custom-checkbox"></div>영국</label>
+                        <label><input type="checkbox" name="select" value="독일" checked><div class="custom-checkbox"></div>독일</label>
+                        <label><input type="checkbox" name="select" value="프랑스" checked><div class="custom-checkbox"></div>프랑스</label>
+                        <label><input type="checkbox" name="select" value="호주" checked><div class="custom-checkbox"></div>호주</label>
+                        <label><input type="checkbox" name="select" value="캐나다" checked><div class="custom-checkbox"></div>캐나다</label>
+                        <label><input type="checkbox" name="select" value="대만" checked><div class="custom-checkbox"></div>대만</label>
+                        <label><input type="checkbox" name="select" value="이스라엘" checked><div class="custom-checkbox"></div>이스라엘</label>
+                        <label><input type="checkbox" name="select" value="스페인" checked><div class="custom-checkbox"></div>스페인</label>
+                        <label><input type="checkbox" name="select" value="필리핀" checked><div class="custom-checkbox"></div>필리핀</label>
+                        <label><input type="checkbox" name="select" value="스웨덴" checked><div class="custom-checkbox"></div>스웨덴</label>
+                        <label><input type="checkbox" name="select" value="러시아" checked><div class="custom-checkbox"></div>러시아</label>
+                        <label><input type="checkbox" name="select" value="덴마크" checked><div class="custom-checkbox"></div>덴마크</label>
+                        <label><input type="checkbox" name="select" value="포르투갈" checked><div class="custom-checkbox"></div>포르투갈</label>
+                        <label><input type="checkbox" name="select" value="스위스" checked><div class="custom-checkbox"></div>스위스</label>
+                        <label><input type="checkbox" name="select" value="폴란드" checked><div class="custom-checkbox"></div>폴란드</label>
+                        <label><input type="checkbox" name="select" value="슬로베니아" checked><div class="custom-checkbox"></div>슬로베니아</label>
+                        <label><input type="checkbox" name="select" value="콜롬비아" checked><div class="custom-checkbox"></div>콜롬비아</label>
+                        <label><input type="checkbox" name="select" value="유라시아" checked><div class="custom-checkbox"></div>유라시아</label>
+                        <label><input type="checkbox" name="select" value="세르비아" checked><div class="custom-checkbox"></div>세르비아</label>
+                        <label><input type="checkbox" name="select" value="오스트리아" checked><div class="custom-checkbox"></div>오스트리아</label>
                     </div>
                 </div>
                 <button class="color-border-button" id="apply-filter" onclick="search()">적용</button>
