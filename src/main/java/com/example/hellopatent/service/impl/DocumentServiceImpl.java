@@ -99,10 +99,7 @@ public class DocumentServiceImpl implements DocumentService {
                         "출원일자",requestDto.getContentValue()[i]));
             }
             else if (isName) {
-                if(requestDto.getContentType().length == 1) {
-                    boolQueryBuilder
-                            .must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭*"));
-                }
+                boolQueryBuilder.must(QueryBuilders.multiMatchQuery(requestDto.getContentValue()[i],"발명의명칭*"));
             }
             else if (isSummary) {
                 boolQueryBuilder
