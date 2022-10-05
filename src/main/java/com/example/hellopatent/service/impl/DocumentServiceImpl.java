@@ -298,6 +298,7 @@ public class DocumentServiceImpl implements DocumentService {
         searchSourceBuilder.trackTotalHits(true);
         searchSourceBuilder.from((requestDto.getPage()-1) * 20);
 
+
         //1차 쿼리
         searchSourceBuilder.query(boolQueryBuilder);
 
@@ -330,7 +331,7 @@ public class DocumentServiceImpl implements DocumentService {
             enResponseDto.set출원일자((String) sourceMap.get("출원일자"));
             enResponseDto.setIPC분류((String) sourceMap.get("IPC분류"));
             enResponseDto.setCPC분류((String) sourceMap.get("CPC분류"));
-            enResponseDto.set국가(nation.get(sourceMap.get("국가")));
+            enResponseDto.set국가(nation.get(sourceMap.get("국가")) + "," + sourceMap.get("국가"));
             enResponseDto.set요약((String) sourceMap.get("요약"));
             enResponseDto.set발명의명칭((String) sourceMap.get("발명의명칭"));
             enResponseDto.set출원인((String) sourceMap.get("출원인"));
