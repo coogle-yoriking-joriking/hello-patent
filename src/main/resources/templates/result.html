@@ -2,271 +2,442 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>안녕, 특허</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안녕, 특허</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-	<link href="/css/index.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
 
 </head>
 <style>
-	/* 사이드바 */
-	.side-bar {
-		position: sticky;
-		top: 200px;
-		left: 50px;
-		align-self: flex-start;
+    #top-button {
+        cursor: pointer;
+        position: fixed;
+        right: 115px;
+        bottom: 50px;
 
-		width: 200px;
-		height: 350px;
-		padding: 20px;
-		padding-top: 10px;
-		margin: 50px 0;
+        width: 60px;
+        height: 60px;
 
-		border-radius: 10px;
-		background-color: white;
-		box-shadow: 0 5px 10px 0 gray;
-		transition: all 0.2s ease-in-out;
-	}
-	.show-side {
-		width: 50px;
-		padding-left: 0;
-		padding-right: 0;
-		left: 0;
+        border-radius: 50%;
+    }
 
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
-	}
-	.select-filter {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-	}
+    #info-button {
+        cursor: pointer;
+        position: fixed;
+        right: 50px;
+        bottom: 50px;
 
-	/* 검색 조회 결과 */
-	.card-container {
-		display: flex;
-		flex-direction: column;
-		row-gap: 20px;
+        width: 60px;
+        height: 60px;
 
-		max-width: 1700px;
-		margin-top: -530px;
-		padding: 100px;
-	}
+        border-radius: 50%;
 
-	.card {
-		display: flex;
-		flex-direction: row;
+        font-size: large;
+    }
 
-		width: 1000px;
-		height: 300px;
-		margin: auto;
+    /* 사이드바 */
+    .side-bar {
+        position: sticky;
+        top: 200px;
+        left: 50px;
+        align-self: flex-start;
 
-		border: 1px solid #dfe1e5;
-		border-radius: 13px;
-		box-shadow: 0 0 5px 0 #dfe1e5;
+        width: 200px;
+        height: 420px;
+        padding: 20px;
+        padding-top: 10px;
+        margin: 50px 0;
 
-		cursor: pointer;
-		overflow: hidden;
-	}
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 0 2px 0 gray;
+        transition: all 0.2s ease-in-out;
+    }
 
-	.card-img {
-		aspect-ratio: 1/1;
-		border-right: 1px solid #dfe1e5;
-	}
+    #hide-side {
+        cursor: pointer;
+        display: flex;
+        position: absolute;
+        right: 10px;
 
-	.card-img img {
-		width: 100%;
-		aspect-ratio: 1/1;
-		object-fit: contain;
-	}
+        color: #999999;
+    }
 
-	.card-content {
-		width: 100%;
+    .show-side {
+        width: 50px;
+        padding-left: 0;
+        padding-right: 0;
+        left: 0;
 
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr;
-		grid-template-rows: 7fr 3fr 3fr 10fr;
-		grid-template-areas:
-			"title title title title"
-			"app app applicant applicant"
-			"status ipc ipc ipc"
-			"summary summary summary summary";
-		justify-items: center;
-		align-items: center;
-	}
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
 
-	.card-title {
-		display: -webkit-box;
-		grid-area: title;
-		overflow: hidden;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
+    .select-filter label {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
 
-		width: 80%;
+    .foreign .select-filter {
+        overflow-y: scroll;
+        height: 250px;
+    }
 
-		font-size: 1.3rem;
-		font-weight: bold;
-	}
+    #more-country {
+        position: absolute;
+        top: 225px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
 
-	.card-app {
-		display: flex;
-		grid-area: app;
+        width: 300px;
+        padding: 5px;
 
-		font-weight: bold;
-	}
+        background: white;
+        border: 1px solid #dfe1e5;
+        border-radius: 10px;
+    }
 
-	.card-ipc {
-		display: flex;
-		grid-area: ipc;
+    #apply-filter {
+        width: 200px;
+        height: 35px;
 
-		width: 90%;
-	}
-	.card-ipc div{
-		word-break: keep-all;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.card-applicant {
-		display: flex;
-		grid-area: applicant;
+        margin: 30px auto;
 
-		width: 90%;
-	}
-	.card-applicant div{
-		word-break: keep-all;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.card-summary {
-		display: -webkit-box;
-		grid-area: summary;
-		overflow: hidden;
-		-webkit-line-clamp: 3;
-		-webkit-box-orient: vertical;
+        font-size: 1rem;
+        letter-spacing: 3px;
+    }
 
-		width: 95%;
+    /* 검색 조회 결과 */
+    .card-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 20px;
 
-		color: #999999;
-	}
-	.card-status {
-		display: flex;
-		grid-area: status;
+        max-width: 1700px;
+        margin-top: -630px;
+        padding: 100px;
+    }
 
-		font-weight: bold;
-	}
+    .card {
+        display: flex;
+        flex-direction: row;
 
-	.card-info {
-		margin-right: 10px;
-		padding: 0 5px;
+        width: 1000px;
+        height: 300px;
+        margin: auto;
 
-		border: 1px solid #82c5f1;
-		border-radius: 5px;
-		background-color: #e8f6fe;
+        border: 1px solid #dfe1e5;
+        border-radius: 13px;
+        box-shadow: 0 0 5px 0 #dfe1e5;
 
-		color: black;
-		font-weight: bold;
-	}
-	.card-notinfo {
-		overflow: hidden;
-	}
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    .card-img {
+        aspect-ratio: 1/1;
+        border-right: 1px solid #dfe1e5;
+    }
+
+    .card-img img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: contain;
+    }
+
+    .card-content {
+        width: 100%;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 7fr 3fr 3fr 10fr;
+        grid-template-areas:
+            "title title title title"
+            "app app applicant applicant"
+            "status ipc ipc ipc"
+            "summary summary summary summary";
+        align-items: center;
+    }
+
+    .card-title {
+        display: -webkit-box;
+        grid-area: title;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+
+        width: 80%;
+        margin: auto;
+
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    .card-app {
+        display: flex;
+        grid-area: app;
+
+        margin-left: 15px;
+
+        font-weight: bold;
+    }
+
+    .card-applicant {
+        display: flex;
+        grid-area: applicant;
+
+        width: 90%;
+        margin: auto;
+    }
+
+    .card-applicant div {
+        word-break: keep-all;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card-status {
+        display: flex;
+        grid-area: status;
+
+        margin-left: 15px;
+
+        font-weight: bold;
+    }
+
+    .card-ipc {
+        display: flex;
+        grid-area: ipc;
+
+        width: 90%;
+    }
+
+    .card-ipc div {
+        word-break: keep-all;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card-summary {
+        display: -webkit-box;
+        grid-area: summary;
+        overflow: hidden;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+
+        width: 95%;
+        margin: auto;
+
+        color: #999999;
+    }
+
+    .card-info {
+        margin-right: 10px;
+        padding: 0 5px;
+
+        border: 1px solid #82c5f1;
+        border-radius: 5px;
+        background-color: #e8f6fe;
+
+        color: black;
+        font-weight: bold;
+    }
+
+    .card-notinfo {
+        overflow: hidden;
+    }
+
+    #pagenation {
+        display: flex;
+        margin-top: 40px;
+
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 10px 0 #dfe1e5;
+        overflow: hidden;
+    }
+
+    #pagenation button {
+        width: 35px;
+        height: 35px;
+        background-color: transparent;
+        border: none;
+        border-radius: 50%;
+    }
+
+    #pagenation button:hover {
+        background-color: #00000010;
+    }
+
+    #pagenation button.active {
+        font-weight: bold;
+        border-radius: 50%;
+        background-color: #dfe1e5;
+    }
 </style>
 <script>
-	let contentType = [];
-	let contentValue = [];
-	let exceptType = [];
-	let exceptValue = [];
+    let contentType = [];
+    let contentValue = [];
+    let exceptType = [];
+    let exceptValue = [];
+    let totalPage;
+    let firstPage = 1;
+    let data = {};
 
-	// 검색 엔터 또는 버튼
-	$(document).on("keyup", "#search-input", function (e) {
-		// input 에 focus 되있을 때 엔터 입력시
-		if (e.key === "Enter") {
+    // 검색탭 버튼
+    $(document).on("click", "#korean, #foreign", function () {
+        if ($(this).hasClass("color-border-button")) {
+            $(this).removeClass("color-border-button").addClass("dark-color-button");
+            $(this).siblings().removeClass("dark-color-button").addClass("color-border-button");
+            contentType = [];
+            contentValue = [];
+            exceptType = [];
+            exceptValue = [];
+            $("input[type=checkbox]").prop("checked", true);
+            if ($(this).attr("id") == "korean") {
+                $(".korean").css("display", "");
+                $(".foreign").css("display", "none");
+            }
+            else {
+                $(".foreign").css("display", "");
+                $(".korean").css("display", "none");
+            }
+        }
+    })
 
-			var input_value = $(this).val().replace(/\s+/g, ' ').trim(); // 값 가져오기
+    // 검색 엔터 또는 버튼
+    $(document).on("keyup", "#search-input", function (e) {
+        // input 에 focus 되있을 때 엔터 입력시
+        if (e.key === "Enter") {
 
-			// 값이 없으면 넘어가기
-			if (input_value !== "") {
-				$("#search-input").val(input_value);
-				search(input_value);
-			}else {
-				$("#search-input").val(input_value);
-			}
-		}
-	});
-	$(document).on("click", ".search-button", function () {
-		var input_value = $("#search-input").val().replace(/\s+/g, ' ').trim(); // 값 가져오기
+            var input_value = $(this).val().replace(/\s+/g, ' ').trim(); // 값 가져오기
 
-		// 값이 없으면 넘어가기
-		if (input_value !== "") {
-			$("#search-input").val(input_value);
-			search(input_value);
-		}else {
-			$("#search-input").val(input_value);
-		}
-	});
+            // 값이 없으면 넘어가기
+            if (input_value !== "") {
+                $("#search-input").val(input_value);
+                search(input_value);
+            } else {
+                $("#search-input").val(input_value);
+            }
+        }
+    });
+    $(document).on("click", ".search-button", function () {
+        var input_value = $("#search-input").val().replace(/\s+/g, ' ').trim(); // 값 가져오기
 
-	// 검색 결과 나타내기
-	function search(input_value) {
+        // 값이 없으면 넘어가기
+        if (input_value !== "") {
+            $("#search-input").val(input_value);
+            search(input_value);
+        } else {
+            $("#search-input").val(input_value);
+        }
+    });
 
-		// 검색어 입력을 통했을때
-		if(input_value != null) {
-			if($("input[value='re-search']").is(":checked")){
-				contentType = []; contentValue = []; exceptType = []; exceptValue = [];
-				contentType.push($("#select-option").children("option:selected").attr("name"));
-				contentValue.push(input_value);
-			}else if($("input[value='include-search']").is(":checked")) {
-				contentType.push($("#select-option").children("option:selected").attr("name"));
-				contentValue.push(input_value);
-			}else if($("input[value='except-search']").is(":checked")) {
-				exceptType.push($("#select-option").children("option:selected").attr("name"));
-				exceptValue.push(input_value);
-			}
-		}
+    // 검색 결과 나타내기
+    function search(input_value) {
+        if (contentType.length + exceptType == 0) {
+            $(".side-bar").css("display", "")
+            $("#top-button").css("display", "")
+            $("body").css("background-color", "")
+            $(".search-bar").css("margin-top", "")
+            $("#search-area").next().css("display", "")
+            $("#logo").css("display", "")
+            $("#big-logo").css("display", "none")
+            data.page = 1;
+        }
 
-		// 필터링 적용할 때, 기존에 입력된 검색어가 없다면 작동 안됨
-		if(contentType.length == 0) {
-			return;
-		}
-		let data = {
-			"contentType": contentType,
-			"contentValue": contentValue,
-			"exceptType": exceptType,
-			"exceptValue": exceptValue
-		};
+        // 검색어 입력을 통했을때
+        if (input_value != null) {
+            if ($("input[value='re-search']").is(":checked")) {
+                contentType = []; contentValue = []; exceptType = []; exceptValue = [];
+                contentType.push($("#select-option").children("option:selected").attr("name"));
+                contentValue.push(input_value);
+            } else if ($("input[value='include-search']").is(":checked")) {
+                contentType.push($("#select-option").children("option:selected").attr("name"));
+                contentValue.push(input_value);
+            } else if ($("input[value='except-search']").is(":checked")) {
+                exceptType.push($("#select-option").children("option:selected").attr("name"));
+                exceptValue.push(input_value);
+            }
+        }
 
-		// 특허/실용 구분
-		if($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
-		if($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
+        // 필터링 적용할 때, 기존에 입력된 검색어가 없다면 작동 안됨
+        if (contentType.length == 0) {
+            return;
+        }
+        data.contentType = contentType,
+            data.contentValue = contentValue,
+            data.exceptType = exceptType,
+            data.exceptValue = exceptValue
+        if ($("#korean").hasClass("dark-color-button")) koreanData();
+        else foreignData();
 
-		// 필터링 적용
-		let statusType = [];
-		if(!$("input[name='select-all']").is(":checked")){
-			for(let i=0; i<7; i++) {
-				if($("input[name='select']")[i].checked) {
-					statusType.push($($("input[name='select']"))[i].value);
-				}
-			}
-			data.statusType = statusType;
-		}
+    }
 
-		console.log(data)
+    function koreanData() {
+        // 특허/실용 구분
+        if ($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
+        if ($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
 
-		$.ajax({
-			type: "GET",
-			url: `/api/document/custom`,
-			data: data,
-			success: function (response) {
-				$(".card-container").children().remove();;
-				for(let i=0; i<response.length; i++) {
-					let card = response[i];
-					let application_number = card["출원번호"].replace(/-/g, "");
-					let ipc = card["IPC분류"].split("|");
-					let status = card["법적상태"]
-					if(status == "소멸 (등록료불납)" || status == "소멸 (존속기간만료)") {
-						status = "소멸";
-					}
-					let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}&pub_reg=P',
+        // 상태 필터링 적용
+        let statusType = [];
+        let select = $("#select-status").find("input[name='select']")
+        if (!$("#select-status").find("input[name='select-all']").is(":checked")) {
+            for (let i = 0; i < 7; i++) {
+                if (select[i].checked) {
+                    statusType.push(select[i].value);
+                    if (select[i].value == "소멸 (등록료불납)") {
+                        statusType.push("소멸 (존속기간만료)");
+                    }
+                }
+            }
+            data.statusType = statusType;
+        }
+        koreanSearch();
+    }
+    function foreignData() {
+        // 국가 필터링 적용
+        let country = [];
+        let select = $("#select-country").find("input[name='select']")
+        if (!$(".foreign").find("input[name='select-all']").is(":checked")) {
+            for (let i = 0; i < 25; i++) {
+                if (select[i].checked) {
+                    country.push(select[i].value);
+                }
+            }
+            data.country = country;
+        }
+        foreignSearch();
+    }
+
+    function koreanSearch() {
+        $.ajax({
+            type: "GET",
+            url: "/patent/korean",
+            data: data,
+            success: function (response) {
+                let patent = response.patentres;
+                $(".card-container").children().not("#pagenation").remove();
+                if (patent.length == 0) {
+                    $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다. 😂</h2>');
+                    return;
+                }
+                $("#pagenation").before(`<div style="width: 900px;margin-top: 30px;color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
+                for (let i = 0; i < patent.length; i++) {
+                    let card = patent[i];
+                    let application_number = card["출원번호"].replace(/-/g, "");
+                    let ipc = card["ipc분류"].split("|");
+                    let status = card["법적상태"];
+                    if (status == "소멸 (등록료불납)" || status == "소멸 (존속기간만료)") {
+                        status = "소멸";
+                    }
+                    let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
+                    let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
 										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
 										<div class="card-content">
@@ -287,209 +458,413 @@
 												<div class="card-info">IPC</div>
 												<div class="card-notinfo">${ipc}</div>
 											</div>
-											<div class="card-summary"><div class="card-info" style="display: inline-block;">요약</div>${card["요약"]}</div>
+											<div class="card-summary"><div class="card-info" style="display: inline-block;">요약</div>${summary}</div>
 										</div>
 									</div>`;
-					$(".card-container").append(temphtml);
-				}
-			}
-		});
-	}
+                    $("#pagenation").before(temphtml);
+                }
+                totalPage = response.pagecount;
+                $("#pagenation").empty();
+                pageBar();
+            }
+        });
+    }
+    function foreignSearch() {
+        $.ajax({
+            type: "GET",
+            url: "/patent/foreign",
+            data: data,
+            success: function (response) {
+                let patent = response.patentres;
+                $(".card-container").children().not("#pagenation").remove();;
+                if (patent.length == 0) {
+                    $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다. 😂</h2>');
+                    return;
+                }
+                $("#pagenation").before(`<div style="width: 900px;margin-top: 30px;color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
+                for (let i = 0; i < patent.length; i++) {
+                    let card = patent[i];
+                    let application_number = card["출원번호"].replace(/-/g, "");
+                    let country = card["국가"].split(",");
+                    let ipc = card["ipc분류"].split(",");
+                    let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
+                    let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
+																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
+										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
+										<div class="card-content">
+											<div class="card-title">${card["발명의명칭"]}</div>
+											<div class="card-app">
+												<div class="card-info">출원번호</div>
+												<div>${card["출원번호"]} (${card["출원일자"]})</div>
+											</div>
+											<div class="card-applicant">
+												<div class="card-info">출원인</div>
+												<div class="card-notinfo">${card["출원인"]}</div>
+											</div>
+											<div class="card-status">
+												<div class="card-info">국가</div>
+												<div style="margin-right: 25px;">${country[0]}</div>
+											</div>
+											<div class="card-ipc">
+												<div class="card-info">IPC</div>
+												<div class="card-notinfo">${ipc}</div>
+											</div>
+											<div class="card-summary"><div class="card-info" style="display: inline-block;">요약</div>${summary}</div>
+										</div>
+									</div>`;
+                    $("#pagenation").before(temphtml);
+                }
+                totalPage = response.pagecount;
+                $("#pagenation").empty();
+                pageBar();
+            }
+        });
+    }
 
-	function filterSearch() {
-		let data = {
-			"contentType": contentType,
-			"contentValue": contentValue,
-			"exceptType": exceptType,
-			"exceptValue": exceptValue
-		};
-		if($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
-		if($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
-		let statusType = [];
-		if(!$("#select-status").is(":checked")){
-			for(let i=0; i<7; i++) {
-				if($("input[name='select']")[i].checked) {
-					statusType.push($($("input[name='select']"))[i].value);
-				}
-			}
-			data.statusType = statusType;
-		}
-	}
+    function pageBar() {
+        $("#pagenation").append("<button>⟪</button><button>⟨</button>");
+        for (i = 0; i < 10; i++) {
+            let p = firstPage + i
+            if (p > totalPage) break;
+            if (p == data.page) {
+                $("#pagenation").append(`<button class="active">${p}</button>`)
+            } else {
+                $("#pagenation").append(`<button>${p}</button>`)
+            }
+        }
+        $("#pagenation").append("<button>⟩</button><button>⟫</button>");
+    }
+
+    $(document).on("click", "#pagenation > button", function () {
+        let clickpage = $(this).text();
+        if (!isNaN(clickpage * 1)) {
+            data.page = clickpage * 1;
+        } else {
+            let tempPage;
+            let tempFirst = firstPage;
+            switch (clickpage) {
+                case "⟪":
+                    tempPage = firstPage - 1;
+                    tempFirst -= 10;
+                    break;
+                case "⟨":
+                    tempPage = data.page - 1;
+                    if (tempPage == firstPage - 1) {
+                        tempFirst -= 10;
+                    }
+                    break;
+                case "⟩":
+                    tempPage = data.page + 1;
+                    if (tempPage == firstPage + 10) {
+                        tempFirst = tempPage;
+                    }
+                    break;
+                case "⟫":
+                    tempPage = firstPage + 10;
+                    tempFirst = tempPage;
+                    break;
+            }
+            if (tempPage > 0 && tempPage <= totalPage && tempPage <= 500) data.page = tempPage;
+            if (tempFirst >= 1 && tempFirst <= totalPage) firstPage = tempFirst;
+        }
+        if ($("#korean").hasClass("dark-color-button")) koreanSearch();
+        else foreignSearch();
+    })
 </script>
-<body>
-	<nav class="navigation-bar scroll-up">
-		<button class="color-border-button" id="login-button" onclick='$("#login").addClass("on")'>로그인</button>
-	</nav>
-	<div style="background-color: #82c5f1;">
-		<div style="height: 70px;"></div>
-		<div class="search-bar">
-			<div th:replace="fragments/index.html :: searchAreaFragment"></div>
-			<div style="margin-top: 15px;">
-				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="re-search">재검색</label>
-				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="include-search">포함검색</label>
-				<label style="margin-right: 20px;"><input type="radio" name="search-type" value="except-search">제외검색</label>
-			</div>
-		</div>
-	</div>
-	<div class="main">
-		<div class="side-bar">
-			<div style="display: flex; justify-content: space-between;">
-				<div style="cursor: pointer;" onclick="$('html, body').animate({scrollTop:0}, '300' );">▲ top</div>
-				<div style="cursor: pointer;" id="hide-side"><img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" style="width: 20px;"></div>
-			</div>
-			<div>
-				<h2 style="color: #3995d0;">권리구분</h2>
-			</div>
-			<div class="select-filter">
-				<label style="grid-column-start: 1; grid-column-end: 3;"><input type="checkbox" value="특허">특허</label>
-				<label><input type="checkbox" value="실용">실용</label>
-			</div>
-			<div>
-				<h2 style="color: #3995d0;">행정상태</h2>
-			</div>
-			<div class="select-filter" id="select-status">
-				<label><input type="checkbox" name="select-all">전체</label>
-				<label><input type="checkbox" name="select" value="거절">거절</label>
-				<label><input type="checkbox" name="select" value="등록">등록</label>
-				<label><input type="checkbox" name="select" value="소멸 (등록료불납)">소멸</label>
-				<label><input type="checkbox" name="select" value="무효">무효</label>
-				<label><input type="checkbox" name="select" value="취하">취하</label>
-				<label><input type="checkbox" name="select" value="포기">포기</label>
-				<label><input type="checkbox" name="select" value="공개">공개</label>
-				<button id="apply-filter" onclick="search()">적용</button>
-			</div>
-		</div>
-		<div class="card-container"></div>
-	</div>
+
+<body style="background-color: #82c5f1;">
+    <div th:replace="fragments/index.html :: infoModalFragment"></div>
+    <nav class="navigation-bar scroll-up">
+        <div id="logo" style="display: none; height: 65px;" onclick="window.location.reload()">
+            <img src="/img/hellopatent_logo.png" style="height: 70px;">
+        </div>
+        <button class="color-border-button" id="login-button" onclick='$("#login").addClass("on")'>로그인</button>
+    </nav>
+    <div style="background-color: #82c5f1;">
+        <div style="height: 70px;"></div>
+        <div class="search-bar" style="margin-top: 10%;">
+            <img id="big-logo" src="/img/hellopatent_biglogo.png" style="width: 300px; margin-bottom: 50px;">
+            <div id="search-tab" style="width: 760px; margin-bottom: 10px;">
+                <button class="dark-color-button" id="korean"
+                    style="width: 160px; height: 40px; font-size: 1rem;">국내특허실용신안</button>
+                <button class="color-border-button" id="foreign"
+                    style="width: 100px; height: 40px; font-size: 1rem;">해외특허</button>
+            </div>
+            <div th:replace="fragments/index.html :: searchAreaFragment"></div>
+            <div style="margin-top: 15px; display: none;">
+                <label class="tooltip" style="margin-right: 20px;"><input type="radio" name="search-type"
+                        value="re-search" checked>기본검색
+                    <span class="tooltip-text">❓ 기존 검색 내용을 삭제하고 새로 검색합니다</span>
+                </label>
+                <label class="tooltip" style="margin-right: 20px;"><input type="radio" name="search-type"
+                        value="include-search">포함검색
+                    <span class="tooltip-text">❓ 결과 내에서 포함할 키워드를 추가합니다</span>
+                </label>
+                <label class="tooltip" style="margin-right: 20px;"><input type="radio" name="search-type"
+                        value="except-search">제외검색
+                    <span class="tooltip-text">❓ 결과 내에서 제외할 키워드를 추가합니다</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <button class="color-border-button" id="top-button" onclick="$('html, body').animate({scrollTop:0}, '300' );"
+            style="display: none;">△TOP</button>
+        <button class="tooltip color-border-button" id="info-button" onclick='$("#info").addClass("on")'>
+            <span class="tooltip-text" style="width: 120px; right: -20px; top: -45px;">❓ 특허 용어 설명</span>?</button>
+        <div class="side-bar" style="display: none;">
+            <div id="side-content">
+                <div style="display: flex; justify-content: space-between;">
+                    <div id="hide-side">◀접기</a></div>
+                </div>
+                <div class="korean">
+                    <h2 style="color: #3995d0;">권리구분</h2>
+                    <div class="select-filter">
+                        <label style="grid-column-start: 1; grid-column-end: 3;"><input type="checkbox" value="특허"
+                                checked>
+                            <div class="custom-checkbox"></div>특허
+                        </label>
+                        <label><input type="checkbox" value="실용" checked>
+                            <div class="custom-checkbox"></div>실용
+                        </label>
+                    </div>
+                    <h2 style="color: #3995d0;">행정상태</h2>
+                    <div class="select-filter" id="select-status">
+                        <label><input type="checkbox" name="select-all" checked>
+                            <div class="custom-checkbox"></div>전체
+                        </label>
+                        <label><input type="checkbox" name="select" value="거절" checked>
+                            <div class="custom-checkbox"></div>거절
+                        </label>
+                        <label><input type="checkbox" name="select" value="등록" checked>
+                            <div class="custom-checkbox"></div>등록
+                        </label>
+                        <label><input type="checkbox" name="select" value="소멸 (등록료불납)" checked>
+                            <div class="custom-checkbox"></div>소멸
+                        </label>
+                        <label><input type="checkbox" name="select" value="무효" checked>
+                            <div class="custom-checkbox"></div>무효
+                        </label>
+                        <label><input type="checkbox" name="select" value="취하" checked>
+                            <div class="custom-checkbox"></div>취하
+                        </label>
+                        <label><input type="checkbox" name="select" value="포기" checked>
+                            <div class="custom-checkbox"></div>포기
+                        </label>
+                        <label><input type="checkbox" name="select" value="공개" checked>
+                            <div class="custom-checkbox"></div>공개
+                        </label>
+                    </div>
+                </div>
+                <div class="foreign" style="display: none;">
+                    <h2 style="color: #3995d0;">국가</h2>
+                    <label style="cursor: pointer; display: flex; margin-bottom: 5px;"><input type="checkbox"
+                            name="select-all" checked>
+                        <div class="custom-checkbox"></div>전체
+                    </label>
+                    <div class="select-filter" id="select-country">
+                        <label><input type="checkbox" name="select" value="미국" checked>
+                            <div class="custom-checkbox"></div>미국
+                        </label>
+                        <label><input type="checkbox" name="select" value="유럽" checked>
+                            <div class="custom-checkbox"></div>유럽
+                        </label>
+                        <label><input type="checkbox" name="select" value="PCT" checked>
+                            <div class="custom-checkbox"></div>PCT
+                        </label>
+                        <label><input type="checkbox" name="select" value="일본" checked>
+                            <div class="custom-checkbox"></div>일본
+                        </label>
+                        <label><input type="checkbox" name="select" value="중국" checked>
+                            <div class="custom-checkbox"></div>중국
+                        </label>
+                        <label><input type="checkbox" name="select" value="영국" checked>
+                            <div class="custom-checkbox"></div>영국
+                        </label>
+                        <label><input type="checkbox" name="select" value="독일" checked>
+                            <div class="custom-checkbox"></div>독일
+                        </label>
+                        <label><input type="checkbox" name="select" value="프랑스" checked>
+                            <div class="custom-checkbox"></div>프랑스
+                        </label>
+                        <label><input type="checkbox" name="select" value="호주" checked>
+                            <div class="custom-checkbox"></div>호주
+                        </label>
+                        <label><input type="checkbox" name="select" value="캐나다" checked>
+                            <div class="custom-checkbox"></div>캐나다
+                        </label>
+                        <label><input type="checkbox" name="select" value="대만" checked>
+                            <div class="custom-checkbox"></div>대만
+                        </label>
+                        <label><input type="checkbox" name="select" value="이스라엘" checked>
+                            <div class="custom-checkbox"></div>이스라엘
+                        </label>
+                        <label><input type="checkbox" name="select" value="스페인" checked>
+                            <div class="custom-checkbox"></div>스페인
+                        </label>
+                        <label><input type="checkbox" name="select" value="필리핀" checked>
+                            <div class="custom-checkbox"></div>필리핀
+                        </label>
+                        <label><input type="checkbox" name="select" value="스웨덴" checked>
+                            <div class="custom-checkbox"></div>스웨덴
+                        </label>
+                        <label><input type="checkbox" name="select" value="러시아" checked>
+                            <div class="custom-checkbox"></div>러시아
+                        </label>
+                        <label><input type="checkbox" name="select" value="덴마크" checked>
+                            <div class="custom-checkbox"></div>덴마크
+                        </label>
+                        <label><input type="checkbox" name="select" value="포르투갈" checked>
+                            <div class="custom-checkbox"></div>포르투갈
+                        </label>
+                        <label><input type="checkbox" name="select" value="스위스" checked>
+                            <div class="custom-checkbox"></div>스위스
+                        </label>
+                        <label><input type="checkbox" name="select" value="폴란드" checked>
+                            <div class="custom-checkbox"></div>폴란드
+                        </label>
+                        <label><input type="checkbox" name="select" value="슬로베니아" checked>
+                            <div class="custom-checkbox"></div>슬로베니아
+                        </label>
+                        <label><input type="checkbox" name="select" value="콜롬비아" checked>
+                            <div class="custom-checkbox"></div>콜롬비아
+                        </label>
+                        <label><input type="checkbox" name="select" value="유라시아" checked>
+                            <div class="custom-checkbox"></div>유라시아
+                        </label>
+                        <label><input type="checkbox" name="select" value="세르비아" checked>
+                            <div class="custom-checkbox"></div>세르비아
+                        </label>
+                        <label><input type="checkbox" name="select" value="오스트리아" checked>
+                            <div class="custom-checkbox"></div>오스트리아
+                        </label>
+                    </div>
+                </div>
+                <button class="color-border-button" id="apply-filter" onclick="search()">적용</button>
+            </div>
+        </div>
+        <div class="card-container">
+            <div id="pagenation">
+            </div>
+        </div>
+    </div>
 </body>
 <script>
-	// 검색 옵션 기본값 = 재검색
-	$("input[value='re-search']").prop("checked", true);
+    // 제외 검색 체크 시 색상 변경
+    $(document).on("change", "input[name='search-type']", function () {
+        if ($("input[value='except-search']")[0].checked) $("#select-option").css("color", "red")
+        else $("#select-option").css("color", "");
+        changePlaceholder();
+    })
 
-	// 제외 검색 체크 시 색상 변경
-	$(document).on("change", "input[name='search-type']", function () {
-		if ($("input[value='except-search']")[0].checked) {
-			$("#select-option").css("color", "red")
-		} else {
-			$("#select-option").css("color", "")
-		}
-		changePlaceholder();
-	})
+    // 드롭다운 항목에 따라 placeholder 변경
+    $(document).on("change", "#select-option", function () {
+        changePlaceholder();
+    });
+    function changePlaceholder() {
+        if ($("input[value='except-search']")[0].checked) $("#search-input").attr("placeholder", $("#select-option").children("option:selected")[0].getAttribute("value2"))
+        else $("#search-input").attr("placeholder", $("#select-option")[0].value)
+    }
 
-	// 드롭다운 항목에 따라 placeholder 변경
-	$(document).on("change", "#select-option", function () {
-		changePlaceholder();
-	});
+    // 필터링 체크박스 전체선택 기능
+    $(document).on("click", "input[name=select-all]", function () {
+        if ($(this).is(":checked")) $(this).parent().siblings().find("input[name=select]").prop("checked", true);
+        else $(this).parent().siblings().find("input[name=select]").prop("checked", false);
+    });
+    $(document).on("click", "input[name=select]", function () {
+        var total = $(this).parent().parent().find("input[name=select]").length;
+        var checked = $(this).parent().parent().find("input[name=select]:checked").length;
 
-	function changePlaceholder() {
-		if ($("input[value='except-search']")[0].checked) {
-			$("#search-input").attr("placeholder", $("#select-option").children("option:selected")[0].getAttribute("value2"))
-		} else {		
-			$("#search-input").attr("placeholder", $("#select-option")[0].value)
-		}
-	}
+        if (total != checked) { $(this).parent().parent().parent().find("input[name=select-all]").prop("checked", false) }
+        else $(this).parent().parent().parent().find("input[name=select-all]").prop("checked", true);
+    });
 
-	// 모든 체크박스 기본값 = checked
-	$("input[type=checkbox]").prop("checked", true);
-
-	// 행정상태 체크박스 전체선택 기능
-	$(document).on("click", "input[name=select-all]", function () {
-		if ($(this).is(":checked")) $("input[name=select]").prop("checked", true);
-		else $("input[name=select]").prop("checked", false);
-	});
-	$(document).on("click", "input[name=select]",function() {
-		var total = $("input[name=select]").length;
-		var checked = $("input[name=select]:checked").length;
-
-		if(total != checked) $("input[name=select-all]").prop("checked", false);
-		else $("input[name=select-all]").prop("checked", true); 
-	});
-
-	// 사이드바 숨기기
-	$(document).on("click", "#hide-side", function() {
-		$(".side-bar").addClass("show-side");
-		$(".side-bar").children().hide();
-		let temp = '<div style="cursor: pointer; width: 10px; margin: auto;" id="show-side"><img src="https://cdn-icons-png.flaticon.com/512/271/271228.png" style="width: 20px;"></div>'
-		$(".side-bar").prepend(temp)
-	})
-	$(document).on("click", "#show-side", function() {
-		$(".side-bar").removeClass("show-side");
-		$(this).remove();
-		setTimeout(() => $(".side-bar").children().show(100), 200)
-	});
+    // 사이드바 숨기기
+    $(document).on("click", "#hide-side", function () {
+        $(".side-bar").addClass("show-side");
+        $("#side-content").hide();
+        let temp = '<div style="cursor: pointer; width: 10px; margin: auto; color: #999999" id="show-side">▶</div>'
+        $(".side-bar").prepend(temp)
+    })
+    $(document).on("click", "#show-side", function () {
+        $(".side-bar").removeClass("show-side");
+        $(this).remove();
+        setTimeout(() => $("#side-content").show(100), 200)
+    });
 </script>
 <script>
-	// 스크롤에 따라 상단바 보이기/숨기기
+    // 스크롤에 따라 상단바 보이기/숨기기
 
-	let didScroll;
-	let lastScrollTop = 0;
-	let delta = 300; // 동작의 구현이 시작되는 위치
-	let navbarHeight = 70; // 영향을 받을 요소를 선택
+    let didScroll;
+    let lastScrollTop = 0;
+    let delta = 300; // 동작의 구현이 시작되는 위치
+    let navbarHeight = 70; // 영향을 받을 요소를 선택
 
-	// 스크롤 여부 알려주기
-	$(window).scroll(function (event) {
-		didScroll = true;
-	});
+    // 스크롤 여부 알려주기
+    $(window).scroll(function (event) {
+        didScroll = true;
+    });
 
-	/* hasScrolled() 실행
-		didScroll 재설정 */
-	setInterval(function () {
-		if (didScroll) {
-			hasScrolled();
-			didScroll = false;
-		}
-	}, 250);
+    /* hasScrolled() 실행
+        didScroll 재설정 */
+    setInterval(function () {
+        if (didScroll) {
+            hasScrolled();
+            didScroll = false;
+        }
+    }, 250);
 
-	// 기능 구현
-	function hasScrolled() {
+    // 기능 구현
+    function hasScrolled() {
 
-		// 현재 스크롤 위치 저장
-		var st = $(this).scrollTop();
+        // 현재 스크롤 위치 저장
+        var st = $(this).scrollTop();
 
-		// 설정한 delta 값보다 더 스크롤되었는지 확인
-		if (Math.abs(lastScrollTop - st) <= delta) {
-			return;
-		}
+        // 설정한 delta 값보다 더 스크롤되었는지 확인
+        if (Math.abs(lastScrollTop - st) <= delta) {
+            return;
+        }
 
-		/* 상단바 높이보다 더 스크롤되었는지 확인
-			스크롤 방향 확인 */
-		if (st > lastScrollTop && st > navbarHeight) {
-			// Scroll Down
-			$(".navigation-bar").removeClass('scroll-up').addClass('scroll-down');
-		} else {
-			// Scroll Up
-			if (st + $(window).height() < $(document).height()) {
-				$('.navigation-bar').removeClass('scroll-down').addClass('scroll-up');
-			}
-		}
+        /* 상단바 높이보다 더 스크롤되었는지 확인
+            스크롤 방향 확인 */
+        if (st > lastScrollTop && st > navbarHeight) {
+            // Scroll Down
+            $(".navigation-bar").removeClass('scroll-up').addClass('scroll-down');
+        } else {
+            // Scroll Up
+            if (st + $(window).height() < $(document).height()) {
+                $('.navigation-bar').removeClass('scroll-down').addClass('scroll-up');
+            }
+        }
 
-		// 스크롤 어느정도 내리면 상단바로 검색바 옮기기
-		if (st < delta + 700) {
-			// 위쪽
-			if ($(".search-bar").find("#search-input").length == 0) {
-				$("#search-area").fadeOut(300, function () {
-					$("#search-input").removeAttr("style");
-					$(".search-bar").prepend($(this));
-					$(this).fadeIn(10);
-				})
-			}
-		} else {
-			// 아래쪽
-			$("#search-input").css("box-shadow", "none");
-			$(".navigation-bar").prepend($("#search-area"));
-		}
+        // 스크롤 어느정도 내리면 상단바로 검색바 옮기기
+        if (st < delta + 700) {
+            // 위쪽
+            if ($(".search-bar").find("#search-input").length == 0) {
+                $("#search-area").fadeOut(300, function () {
+                    $("#search-input").removeAttr("style");
+                    $("#search-tab").after($(this));
+                    $(this).fadeIn(10);
+                })
+            }
+        } else {
+            // 아래쪽
+            $("#search-input").css("box-shadow", "none");
+            // $(".navigation-bar").prepend($("#search-area"));
+            $("#logo").after($("#search-area"))
+        }
 
-		// lastScrollTop 에 현재 스크롤위치를 저장
-		lastScrollTop = st;
-	}
+        // lastScrollTop 에 현재 스크롤위치를 저장
+        lastScrollTop = st;
+    }
 
-	/* 추가로 웹페이지의 스크롤을 내렸을때를 감지해 코드를 실행시키는 함수입니다.
-	$(window).scroll(function(){ 
-	if($(window).scrollTop() == $(document).height() - $(window).height()){ 
-		// 실행할 함수
-	} 
-	});
-	*/
+    /* 추가로 웹페이지의 스크롤을 내렸을때를 감지해 코드를 실행시키는 함수입니다.
+    $(window).scroll(function(){ 
+    if($(window).scrollTop() == $(document).height() - $(window).height()){ 
+        // 실행할 함수
+    } 
+    });
+    */
 </script>
 
 </html>
