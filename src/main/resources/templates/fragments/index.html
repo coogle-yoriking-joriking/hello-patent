@@ -16,6 +16,12 @@
     <button class="search-button"></button>
 </div>
 
+<!-- 로딩창 -->
+<div class="modal on" th:fragment="loadingFragment">
+    <div class="modal-background"></div>
+    <img src="https://t1.daumcdn.net/cfile/blog/9971254B5E3A670916" style="width: 50px;">
+</div>
+
 <!-- 용어 설명 모달창 -->
 <div class="modal" id="info" th:fragment="infoModalFragment">
     <div class="modal-background" onclick='$(this).parent().removeClass("on")'></div>

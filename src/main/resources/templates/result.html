@@ -329,6 +329,10 @@
             $("#container-top").css("display", "none")
             $("#pagenation").css("display", "none")
             $("#container-top > select > option:contains('정확도순')").prop("selected", true);
+            $("#select-option").find("option[name='전체']").prop("selected", true);
+            $("input[value=re-search]").prop("checked", true);
+            $("#search-input").attr("placeholder", $("#select-option")[0].value);
+            $("#select-option").css("color", "");
 
             $(this).removeClass("color-border-button").addClass("dark-color-button");
             $(this).siblings().removeClass("dark-color-button").addClass("color-border-button");
@@ -522,12 +526,13 @@
                     let ipc = (card["ipc분류"] != null) ? card["ipc분류"].split(",") : "IPC가 없습니다";
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
 
-                    let img = countryNum(card);
+                    let num = countryNum(card);
                     
-                    let imgurl = (img == null) ? "/img/noimg.png" : `http://abpat.kipris.or.kr/abpat/remoteFile.do?method=bigFrontDraw&thumb=Y&publ_key=${img}`;
+                    let imgurl = (num == null) ? "/img/noimg.png" : `http://abpat.kipris.or.kr/abpat/remoteFile.do?method=bigFrontDraw&thumb=Y&publ_key=${num}&cntry=${card["국가"].split(",")[1]}`;
+                    let pdfurl = (num == null) ? "alert('PDF를 지원하지 않습니다');" : `window.open('http://abpat.kipris.or.kr/abpat/${num}.pdf?method=fileView&publ_key=${num}&fileType=S10201',
+                                                                    'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');`;
 
-                    let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
-																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
+                    let temphtml = `<div class="card" id="${application_number}" onclick="${pdfurl}">
 										<div class="card-img"><img src="${imgurl}" onerror="this.src='/img/noimg.png'"></div>
 										<div class="card-content">
                                             <div class="card-flag">
@@ -668,8 +673,9 @@
 
 <body style="background-color: #82c5f1;">
     <div th:replace="fragments/index.html :: infoModalFragment"></div>
+    <!-- <div th:replace="fragments/index.html :: loadingFragment"></div> -->
     <nav class="navigation-bar scroll-up">
-        <div id="logo" style="display: none; height: 65px;" onclick="window.location.reload()">
+        <div id="logo" style="cursor: pointer; display: none; height: 65px;" onclick="window.location.reload()">
             <img src="/img/hellopatent_logo.png" style="height: 70px;">
         </div>
     </nav>
