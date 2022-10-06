@@ -2,75 +2,166 @@
 
 <!-- 검색바 -->
 <div id="search-area" th:fragment="searchAreaFragment">
-	<select id="select-option">
-		<option value="찾고싶은 키워드를 입력해주세요" name="전체" value2="제외할 키워드를 입력해주세요">전체</option>
-		<option value="제목에서 찾고싶은 키워드를 입력해주세요" name="발명의명칭" value2="제목에서 제외할 키워드를 입력해주세요">제목(명칭)</option>
-		<option value="요약에서 찾고싶은 키워드를 입력해주세요" name="요약" value2="요약에서 제외할 키워드를 입력해주세요">요약</option>
-		<option value="출원/공고/공개/등록 번호에서 찾고싶은 번호를 입력해주세요" name="번호정보" value2="출원/공고/공개/등록 번호에서 제외할 번호를 입력해주세요">
-			번호정보</option>
-		<option value="찾고싶은 연도를 입력해주세요" name="연도" value2="제외할 연도를 입력해주세요">연도</option>
-		<option value="찾고싶은 IPC/CPC를 입력해주세요" name="IPC/CPC분류" value2="제외할 IPC/CPC를 입력해주세요">IPC/CPC분류</option>
-		<option value="찾고싶은 출원인을 입력해주세요" name="출원인" value2="제외할 출원인을 입력해주세요">출원인</option>
-	</select>
-	<input type="text" id="search-input" placeholder="찾고싶은 키워드를 입력해주세요">
-	<button class="search-button"></button>
+    <select id="select-option">
+        <option value="찾고싶은 키워드를 입력해주세요" name="전체" value2="제외할 키워드를 입력해주세요">전체</option>
+        <option value="제목에서 찾고싶은 키워드를 입력해주세요" name="발명의명칭" value2="제목에서 제외할 키워드를 입력해주세요">제목(명칭)</option>
+        <option value="요약에서 찾고싶은 키워드를 입력해주세요" name="요약" value2="요약에서 제외할 키워드를 입력해주세요">요약</option>
+        <option value="출원/공고/공개/등록 번호에서 찾고싶은 번호를 입력해주세요" name="번호정보" value2="출원/공고/공개/등록 번호에서 제외할 번호를 입력해주세요">
+            번호정보</option>
+        <option value="찾고싶은 연도를 입력해주세요" name="연도" value2="제외할 연도를 입력해주세요">연도</option>
+        <option value="찾고싶은 IPC/CPC를 입력해주세요" name="IPC/CPC분류" value2="제외할 IPC/CPC를 입력해주세요">IPC/CPC분류</option>
+        <option value="찾고싶은 출원인을 입력해주세요" name="출원인" value2="제외할 출원인을 입력해주세요">출원인</option>
+    </select>
+    <input type="text" id="search-input" placeholder="찾고싶은 키워드를 입력해주세요">
+    <button class="search-button"></button>
 </div>
 
 <!-- 용어 설명 모달창 -->
 <div class="modal" id="info" th:fragment="infoModalFragment">
-	<div class="modal-background" onclick='$(this).parent().removeClass("on")'></div>
-	<div class="modal-card">
-		<h2>용어 설명</h2>
-		<div class="info-ipc">
-			<h3>IPC 국제특허분류</h3>
-			<span>국제적으로 통일화된 특허문헌의 분류체계</span>
-			<ul style="display: flex;">
-				<li class="li_ipc_A">
-					<img class="code-img" src="/img/ipcA.png" alt="IPC코드 A"> 
-					<div class="code-title-txt">생활필수품</div>
-				</li>
-				<li class="li_ipc_B">
-					<img class="code-img" src="/img/ipcB.png" alt="IPC코드 B"> 
-					<div class="code-title-txt">처리조작·운수</div>
-				</li>
-				<li class="li_ipc_C">
-					<img class="code-img" src="/img/ipcC.png" alt="IPC코드 C"> 
-					<div class="code-title-txt">화학·야금</div>
-				</li>
-				<li class="li_ipc_D">
-					<img class="code-img" src="/img/ipcD.png" alt="IPC코드 D"> 
-					<div class="code-title-txt">섬유·지류</div>
-				</li>
-				<li class="li_ipc_E">
-					<img class="code-img" src="/img/ipcE.png" alt="IPC코드 E"> 
-					<div class="code-title-txt">고정구조물</div>
-				</li>
-				<li class="li_ipc_F">
-					<img class="code-img" src="/img/ipcF.png" alt="IPC코드 F"> 
-					<div class="code-title-txt">기계공학·조명<br>·가열·무기·폭파</div>
-				</li>
-				<li class="li_ipc_G">
-					<img class="code-img" src="/img/ipcG.png" alt="IPC코드 G"> 
-					<div class="code-title-txt">물리학</div>
-				</li>
-				<li class="li_ipc_H">
-					<img class="code-img" src="/img/ipcH.png" alt="IPC코드 H"> 
-					<div class="code-title-txt">전기</div>
-				</li>
-			</ul>
-		</div>
-		<div class="info-cpc">
-			<h3>CPC 협력적 특허분류</h3>
-			<span>국제특허분류를 세분화한 특허분류 체계</span>
-		</div>
-		<div class="info-num">
-			<h3>번호구분</h3>
-			<span>**출원번호** : 특허청에 출원서를 접수 할 때 부여되는 번호</span><br>
-			<span>**공개번호** : 출원인의 조기공개신청 및 출원공개제도* 에 따라 공개될 때 부여되는 번호</span><br>
-			<span>＊특허 출원후 1년 6개월 경과시 또는 디자인 출원의 설정등록시</span><br>
-			<span>**공고번호** : (출원 또는 등록이 있을 때) 이에 대한 사항을 공보에 공고할 경우 부여되는 번호</span><br>
-			<span>**등록번호** : 심사 후 등록 결정이 되면 등록료를 납부하여 최종적으로 권리를 받을 때 부여되는 번호</span>
-		</div>
-	</div>
+    <div class="modal-background" onclick='$(this).parent().removeClass("on")'></div>
+    <div class="modal-card">
+        <h2>용어 설명</h2>
+        <div class="info-ipc">
+            <h3>IPC 국제 특허분류</h3>
+            <span>국제적으로 통일화된 특허문헌의 분류체계</span>
+            <ul style="display: flex; justify-content: center;">
+                <li class="li_ipc_A tooltip">
+                    <img class="code-img" src="/img/ipcA.png" alt="IPC코드 A">
+                    <div class="code-title-txt">생활필수품</div>
+                    <span class="tooltip-text">생활필수품/농업 : 농업, 임업, 축산, 어업, 제빵, 도살, 식료품, 담배, 의류, 두의, 신발 등</span>
+                </li>
+                <li class="li_ipc_B tooltip">
+                    <img class="code-img" src="/img/ipcB.png" alt="IPC코드 B">
+                    <div class="code-title-txt">처리조작·운수</div>
+                    <span class="tooltip-text">처리조작/운수 : 분리,혼합,성형,운수,나노기술</span>
+                </li>
+                <li class="li_ipc_C tooltip">
+                    <img class="code-img" src="/img/ipcC.png" alt="IPC코드 C">
+                    <div class="code-title-txt">화학·야금</div>
+                    <span class="tooltip-text">화학/야금 : 무기화학, 유기화학,도금,효소학,전기분해,콘크리트 등</span>
+                </li>
+                <li class="li_ipc_D tooltip">
+                    <img class="code-img" src="/img/ipcD.png" alt="IPC코드 D">
+                    <div class="code-title-txt">섬유·지류</div>
+                    <span class="tooltip-text">섬유/지류 : 종이,봉제,로프,편물,부직포 등</span>
+                </li>
+                <li class="li_ipc_E tooltip">
+                    <img class="code-img" src="/img/ipcE.png" alt="IPC코드 E">
+                    <div class="code-title-txt">고정구조물</div>
+                    <span class="tooltip-text">고정구조물 : 건설,도로,상수,하수,도어,창 등</span>
+                </li>
+                <li class="li_ipc_F tooltip">
+                    <img class="code-img" src="/img/ipcF.png" alt="IPC코드 F">
+                    <div class="code-title-txt">기계공학·조명<br>·가열·무기·폭파</div>
+                    <span class="tooltip-text">기계공학 : 연소기관,조명,증기발생,냉동,건조 등</span>
+                </li>
+                <li class="li_ipc_G tooltip">
+                    <img class="code-img" src="/img/ipcG.png" alt="IPC코드 G">
+                    <div class="code-title-txt">물리학</div>
+                    <span class="tooltip-text">물리학 : 광학,정보저장,신호,악기,계산 등</span>
+                </li>
+                <li class="li_ipc_H tooltip">
+                    <img class="code-img" src="/img/ipcH.png" alt="IPC코드 H">
+                    <div class="code-title-txt">전기</div>
+                    <span class="tooltip-text">전기 : 전기통신기술,배전 등</span>
+                </li>
+            </ul>
+        </div>
+        <div class="info-cpc">
+            <h3>CPC 협력적 특허분류</h3>
+            <span>국제특허분류를 세분화한 특허분류 체계</span>
+        </div>
+        <div class="info-num">
+            <h3 style="margin-top: 20px;">번호정보</h3>
+            <table style="border : 0;">
+                <thead>
+                    <tr>
+                        <td colspan="3">
+                            <img id="numberSearch10" class="cursor" src="http://beginner.kipris.or.kr/beginner/images/explain/number_search_01.png" alt="10 특허">
+                            <img id="numberSearch20" class="cursor" src="http://beginner.kipris.or.kr/beginner/images/explain/number_search_02.png" alt="20 실용신안">
+                            
+                        </td>
+                    </tr>
+                </thead>
+                <tbody class="number_info_main">
+                    <tr>
+                        <td class="number_info_title">출원번호</td>
+                        <td class="number_info_explain">
+                            <img src="http://beginner.kipris.or.kr/beginner/images/explain/number_search_arrow.png" alt="우측 화살표">
+                            <p>
+                                특허청에 <strong>출원서를 접수 할 때 부여되는 번호</strong>
+                            </p>
+                        </td>
+                        <td rowspan="4" class="number_info_bottom_02">
+                            <table style="border : 0;" class="number_info_sub">
+                                <tbody><tr class="number_info_example">
+                                    <td>
+                                        <b>권리구분</b>(2자리)<span class="info_gray">&nbsp;+&nbsp;</span>
+                                        <b>연도</b>(4자리)<span class="info_gray">&nbsp;+&nbsp;</span>
+                                        <b>일련번호</b>(7자리)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="number_info_example_none info_gray">
+                                        〈예시〉10<span class="info_gray">-</span>2011<span class="info_gray">-</span>0004891
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="number_info_title" rowspan="2">공개번호</td>
+                        <td class="number_info_explain">
+                            <img src="http://beginner.kipris.or.kr/beginner/images/explain/number_search_arrow.png" alt="우측 화살표">
+                            <p>
+                                출원인의 조기공개신청 및 <i>출원공개제도</i><sup>*</sup>&nbsp;에 따라 <strong>공개될 때 부여되는 번호</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="number_info_explain_02">
+                            <p>
+                                *&nbsp;특허 출원 후 1년 6개월 경과시 또는 디자인 출원의 공개신청시
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="number_info_title">공고번호</td>
+                        <td class="number_info_explain">
+                            <img src="http://beginner.kipris.or.kr/beginner/images/explain/number_search_arrow.png" alt="우측 화살표">
+                            <p>
+                                (출원 또는 등록이 있을 때) 이에 대한 사항을<strong>&nbsp;공보에 공고할 경우 부여되는 번호</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="number_info_bottom_01">
+                        <td class="number_info_title">등록번호</td>
+                        <td class="number_info_explain">
+                            <img src="http://beginner.kipris.or.kr/beginner/images/explain/number_search_arrow.png" alt="우측 화살표">
+                            <p>
+                                심사 후 등록 결정이 되면 등록료를 납부하여 <strong>최종적으로 권리를 받을 때 부여되는 번호</strong>
+                            </p>
+                        </td>
+                        <td>
+                            <table style="border : 0;" class="number_info_sub">
+                                <tbody style="font-size: 0.7rem;"><tr class="number_info_example">
+                                    <td>
+                                        <b>권리구분</b>(2자리)<span class="info_gray">&nbsp;+&nbsp;</span>
+                                        <b>일련번호</b>(7자리)<span class="info_gray">&nbsp;+&nbsp;</span>
+                                        <b>자리값</b>(0000)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="info_gray">
+                                        〈예시〉 10<span class="info_gray">-</span>1253502<span class="info_gray">-</span>0000
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 </html>

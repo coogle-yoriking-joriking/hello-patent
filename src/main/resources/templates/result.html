@@ -85,9 +85,12 @@
         align-items: center;
     }
 
-    .foreign .select-filter {
+    #select-country {
         overflow-y: scroll;
         height: 250px;
+    }
+    #select-country img {
+        margin: 0 3px;
     }
 
     #more-country {
@@ -115,6 +118,22 @@
     }
 
     /* 검색 조회 결과 */
+    #container-top {
+        display: flex;
+        justify-content: space-between;
+        width: 900px;
+        margin-top: 30px;
+    }
+    #container-top select {
+        cursor: pointer;
+        padding: 3px;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+    #container-top select:focus-visible {
+        outline: none;
+    }
+
     .card-container {
         display: flex;
         flex-direction: column;
@@ -165,6 +184,16 @@
             "status ipc ipc ipc"
             "summary summary summary summary";
         align-items: center;
+    }
+
+    .card-flag {
+        grid-area: title;
+        width: 10%;
+        display: flex;
+        justify-content: center;
+    }
+    .card-flag img {
+        height: 20px;
     }
 
     .card-title {
@@ -295,6 +324,12 @@
     // 검색탭 버튼
     $(document).on("click", "#korean, #foreign", function () {
         if ($(this).hasClass("color-border-button")) {
+            $(".card-container").children().not("#pagenation, #container-top").remove();
+            $("#container-top").children("div").remove();
+            $("#container-top").css("display", "none")
+            $("#pagenation").css("display", "none")
+            $("#container-top > select > option:contains('정확도순')").prop("selected", true);
+
             $(this).removeClass("color-border-button").addClass("dark-color-button");
             $(this).siblings().removeClass("dark-color-button").addClass("color-border-button");
             contentType = [];
@@ -303,10 +338,12 @@
             exceptValue = [];
             $("input[type=checkbox]").prop("checked", true);
             if ($(this).attr("id") == "korean") {
+                $("#pagenation").before('<h2 style="text-align: center;">국내 특허·실용신안 검색입니다</h2>');
                 $(".korean").css("display", "");
                 $(".foreign").css("display", "none");
             }
             else {
+                $("#pagenation").before('<h2 style="text-align: center;">해외 특허 검색입니다</h2>');
                 $(".foreign").css("display", "");
                 $(".korean").css("display", "none");
             }
@@ -324,7 +361,7 @@
             if (input_value !== "") {
                 $("#search-input").val(input_value);
                 search(input_value);
-            } else {
+            }else {
                 $("#search-input").val(input_value);
             }
         }
@@ -336,7 +373,7 @@
         if (input_value !== "") {
             $("#search-input").val(input_value);
             search(input_value);
-        } else {
+        }else {
             $("#search-input").val(input_value);
         }
     });
@@ -357,13 +394,13 @@
         // 검색어 입력을 통했을때
         if (input_value != null) {
             if ($("input[value='re-search']").is(":checked")) {
-                contentType = []; contentValue = []; exceptType = []; exceptValue = [];
+                contentType = []; contentValue = []; exceptType = []; exceptValue = []; page = 1;
                 contentType.push($("#select-option").children("option:selected").attr("name"));
                 contentValue.push(input_value);
-            } else if ($("input[value='include-search']").is(":checked")) {
+            }else if ($("input[value='include-search']").is(":checked")) {
                 contentType.push($("#select-option").children("option:selected").attr("name"));
                 contentValue.push(input_value);
-            } else if ($("input[value='except-search']").is(":checked")) {
+            }else if ($("input[value='except-search']").is(":checked")) {
                 exceptType.push($("#select-option").children("option:selected").attr("name"));
                 exceptValue.push(input_value);
             }
@@ -384,6 +421,7 @@
 
     function koreanData() {
         // 특허/실용 구분
+        delete data.patentType;
         if ($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
         if ($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
 
@@ -400,7 +438,7 @@
                 }
             }
             data.statusType = statusType;
-        }
+        }else delete data.statusType;
         koreanSearch();
     }
     function foreignData() {
@@ -414,7 +452,7 @@
                 }
             }
             data.country = country;
-        }
+        }else delete data.country;
         foreignSearch();
     }
 
@@ -424,13 +462,8 @@
             url: "/patent/korean",
             data: data,
             success: function (response) {
+                commonResponse(response.totalhits);
                 let patent = response.patentres;
-                $(".card-container").children().not("#pagenation").remove();
-                if (patent.length == 0) {
-                    $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다. 😂</h2>');
-                    return;
-                }
-                $("#pagenation").before(`<div style="width: 900px; margin-top: 30px; color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
                 for (let i = 0; i < patent.length; i++) {
                     let card = patent[i];
                     let title = (card["발명의명칭"] != null) ? card["발명의명칭"] : "제목이 없습니다";
@@ -442,7 +475,7 @@
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
                     let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
-										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
+										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}" onerror="this.src='/img/noimg.png'"></div>
 										<div class="card-content">
 											<div class="card-title">${title}</div>
 											<div class="card-app">
@@ -478,13 +511,8 @@
             url: "/patent/foreign",
             data: data,
             success: function (response) {
+                commonResponse(response.totalhits);
                 let patent = response.patentres;
-                $(".card-container").children().not("#pagenation").remove();;
-                if (patent.length == 0) {
-                    $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다. 😂</h2>');
-                    return;
-                }
-                $("#pagenation").before(`<div style="width: 900px; margin-top: 30px; color: gray;">검색결과: ${Number(response.totalhits).toLocaleString("en-US")}건</div>`);
                 for (let i = 0; i < patent.length; i++) {
                     let card = patent[i];
                     let title = (card["발명의명칭"] != null) ? card["발명의명칭"] : "제목이 없습니다";
@@ -493,10 +521,18 @@
                     let country = card["국가"].split(",");
                     let ipc = (card["ipc분류"] != null) ? card["ipc분류"].split(",") : "IPC가 없습니다";
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
+
+                    let img = countryNum(card);
+                    
+                    let imgurl = (img == null) ? "/img/noimg.png" : `http://abpat.kipris.or.kr/abpat/remoteFile.do?method=bigFrontDraw&thumb=Y&publ_key=${img}`;
+
                     let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
-										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
+										<div class="card-img"><img src="${imgurl}" onerror="this.src='/img/noimg.png'"></div>
 										<div class="card-content">
+                                            <div class="card-flag">
+                                                <img src="/img/flag/icon_${country[1]}.gif">
+                                            </div>
 											<div class="card-title">${title}</div>
 											<div class="card-app">
 												<div class="card-info">출원번호</div>
@@ -526,6 +562,20 @@
         });
     }
 
+    function commonResponse(totalhits) {
+        $(".card-container").children().not("#pagenation, #container-top").remove();
+        if (totalhits == 0) {
+            $("#container-top").css("display", "none")
+            $("#pagenation").css("display", "none")
+            $("#pagenation").before('<h2 style="text-align: center;">검색 결과가 없습니다 😥</h2>');
+            return;
+        }
+        $("#pagenation").css("display", "")
+        $("#container-top").children("div").remove();
+        $("#container-top").css("display", "")
+        $("#container-top").prepend(`<div style="color: gray; padding-top: 6px;">검색결과: ${Number(totalhits).toLocaleString("en-US")}건</div>`);
+    }
+
     function pageBar() {
         $("#pagenation").append("<button>⟪</button><button>⟨</button>");
         for (i = 0; i < 10; i++) {
@@ -544,7 +594,7 @@
         let clickpage = $(this).text();
         if (!isNaN(clickpage * 1)) {
             data.page = clickpage * 1;
-        } else {
+        }else {
             let tempPage;
             let tempFirst = firstPage;
             switch (clickpage) {
@@ -575,6 +625,45 @@
         if ($("#korean").hasClass("dark-color-button")) koreanSearch();
         else foreignSearch();
     })
+
+    function countryNum(card) {
+        const country = card["국가"].split(",")[1];
+        switch(country) {  
+            case "CN":
+                if(card["등록번호"] == null && card["공개번호"] != null) return `CN${card["출원번호"]}A0&cntry=CN`;
+                else if(card["등록번호"] == null && card["공개번호"] == null) return `CN${card["출원번호"]}Y0&cntry=CN`;
+                else if(card["공개번호"] == null) {
+                    if(card["출원일자"].replace(/./g, "") < 20100000) return `CN${card["출원번호"]}Y0&cntry=CN`;
+                    else return `CN${card["출원번호"]}U0&cntry=CN`;
+                }else return `CN${card["출원번호"]}C0&cntry=CN`;
+            case "JP":
+                if(card["등록번호"] == null || card["공개번호"] == null) return null;
+                return `JP0000${card["등록번호"]}B2&cntry=JP`;
+            case "WO":
+                let num = card["공개번호"];
+                return `WO${num.slice(0, 4)}00${num.slice(-6, 10)}A1&cntry=WO`;
+            case "US":
+                if(card["등록번호"] == null && card["공개번호"] != null) return `US0000${card["공개번호"]}A1&cntry=US`;
+                else if(card["등록번호"] != null && card["공개번호"] == null) return `US0000${card["등록번호"]}B1&cntry=US`;
+                else if(card["등록번호"] == null && card["공개번호"] == null) return `US0000${card["출원번호"]}A1&cntry=US`;
+                else return `US0000${card["등록번호"]}B2&cntry=US`;
+            case "EP":
+                if(card["등록번호"] == null) return `US0000${card["공보번호"]}A1&cntry=US`;
+                else return `US0000${card["공보번호"]}B1&cntry=US`;
+            default:
+                return null;
+        }
+    }
+
+    // 정렬 기능
+    $(document).on("change", "#container-top > select", function () {
+        let sort = $("#container-top > select").children("option:selected").text();
+        if(sort == "정확도순") delete data.sortType
+        else data.sortType = sort;
+        data.page = 1;
+        if ($("#korean").hasClass("dark-color-button")) koreanSearch();
+        else foreignSearch();
+    });
 </script>
 
 <body style="background-color: #82c5f1;">
@@ -583,11 +672,10 @@
         <div id="logo" style="display: none; height: 65px;" onclick="window.location.reload()">
             <img src="/img/hellopatent_logo.png" style="height: 70px;">
         </div>
-        <button class="color-border-button" id="login-button" onclick='$("#login").addClass("on")'>로그인</button>
     </nav>
     <div style="background-color: #82c5f1;">
         <div style="height: 70px;"></div>
-        <div class="search-bar" style="margin-top: 10%;">
+        <div class="search-bar" style="margin-top: 7%;">
             <img id="big-logo" src="/img/hellopatent_biglogo.png" style="width: 300px; margin-bottom: 50px;">
             <div id="search-tab" style="width: 760px; margin-bottom: 10px;">
                 <button class="dark-color-button" id="korean"
@@ -646,37 +734,45 @@
                     <label style="cursor: pointer; display: flex; margin-bottom: 10px;"><input type="checkbox"
                             name="select-all" checked><div class="custom-checkbox"></div>전체</label>
                     <div class="select-filter" id="select-country">
-                        <label><input type="checkbox" name="select" value="미국" checked><div class="custom-checkbox"></div>미국</label>
-                        <label><input type="checkbox" name="select" value="유럽" checked><div class="custom-checkbox"></div>유럽</label>
-                        <label><input type="checkbox" name="select" value="PCT" checked><div class="custom-checkbox"></div>PCT</label>
-                        <label><input type="checkbox" name="select" value="일본" checked><div class="custom-checkbox"></div>일본</label>
-                        <label><input type="checkbox" name="select" value="중국" checked><div class="custom-checkbox"></div>중국</label>
-                        <label><input type="checkbox" name="select" value="영국" checked><div class="custom-checkbox"></div>영국</label>
-                        <label><input type="checkbox" name="select" value="독일" checked><div class="custom-checkbox"></div>독일</label>
-                        <label><input type="checkbox" name="select" value="프랑스" checked><div class="custom-checkbox"></div>프랑스</label>
-                        <label><input type="checkbox" name="select" value="호주" checked><div class="custom-checkbox"></div>호주</label>
-                        <label><input type="checkbox" name="select" value="캐나다" checked><div class="custom-checkbox"></div>캐나다</label>
-                        <label><input type="checkbox" name="select" value="대만" checked><div class="custom-checkbox"></div>대만</label>
-                        <label><input type="checkbox" name="select" value="이스라엘" checked><div class="custom-checkbox"></div>이스라엘</label>
-                        <label><input type="checkbox" name="select" value="스페인" checked><div class="custom-checkbox"></div>스페인</label>
-                        <label><input type="checkbox" name="select" value="필리핀" checked><div class="custom-checkbox"></div>필리핀</label>
-                        <label><input type="checkbox" name="select" value="스웨덴" checked><div class="custom-checkbox"></div>스웨덴</label>
-                        <label><input type="checkbox" name="select" value="러시아" checked><div class="custom-checkbox"></div>러시아</label>
-                        <label><input type="checkbox" name="select" value="덴마크" checked><div class="custom-checkbox"></div>덴마크</label>
-                        <label><input type="checkbox" name="select" value="포르투갈" checked><div class="custom-checkbox"></div>포르투갈</label>
-                        <label><input type="checkbox" name="select" value="스위스" checked><div class="custom-checkbox"></div>스위스</label>
-                        <label><input type="checkbox" name="select" value="폴란드" checked><div class="custom-checkbox"></div>폴란드</label>
-                        <label><input type="checkbox" name="select" value="슬로베니아" checked><div class="custom-checkbox"></div>슬로베니아</label>
-                        <label><input type="checkbox" name="select" value="콜롬비아" checked><div class="custom-checkbox"></div>콜롬비아</label>
-                        <label><input type="checkbox" name="select" value="유라시아" checked><div class="custom-checkbox"></div>유라시아</label>
-                        <label><input type="checkbox" name="select" value="세르비아" checked><div class="custom-checkbox"></div>세르비아</label>
-                        <label><input type="checkbox" name="select" value="오스트리아" checked><div class="custom-checkbox"></div>오스트리아</label>
+                        <label><input type="checkbox" name="select" value="미국" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_US.gif">미국</label>
+                        <label><input type="checkbox" name="select" value="유럽" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_EP.gif">유럽</label>
+                        <label><input type="checkbox" name="select" value="PCT" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_WO.gif">PCT</label>
+                        <label><input type="checkbox" name="select" value="일본" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_JP.gif">일본</label>
+                        <label><input type="checkbox" name="select" value="중국" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_CN.gif">중국</label>
+                        <label><input type="checkbox" name="select" value="영국" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_GB.gif">영국</label>
+                        <label><input type="checkbox" name="select" value="독일" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_DE.gif">독일</label>
+                        <label><input type="checkbox" name="select" value="프랑스" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_FR.gif">프랑스</label>
+                        <label><input type="checkbox" name="select" value="호주" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_AU.gif">호주</label>
+                        <label><input type="checkbox" name="select" value="캐나다" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_CA.gif">캐나다</label>
+                        <label><input type="checkbox" name="select" value="대만" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_TW.gif">대만</label>
+                        <label><input type="checkbox" name="select" value="이스라엘" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_IL.gif">이스라엘</label>
+                        <label><input type="checkbox" name="select" value="스페인" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_ES.gif">스페인</label>
+                        <label><input type="checkbox" name="select" value="필리핀" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_PH.gif">필리핀</label>
+                        <label><input type="checkbox" name="select" value="스웨덴" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_SE.gif">스웨덴</label>
+                        <label><input type="checkbox" name="select" value="러시아" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_RU.gif">러시아</label>
+                        <label><input type="checkbox" name="select" value="오스트리아" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_AT.gif">오스트리아</label>
+                        <label><input type="checkbox" name="select" value="덴마크" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_DK.gif">덴마크</label>
+                        <label><input type="checkbox" name="select" value="포르투갈" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_PT.gif">포르투갈</label>
+                        <label><input type="checkbox" name="select" value="스위스" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_CH.gif">스위스</label>
+                        <label><input type="checkbox" name="select" value="폴란드" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_PL.gif">폴란드</label>
+                        <label><input type="checkbox" name="select" value="슬로베니아" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_SI.gif">슬로베니아</label>
+                        <label><input type="checkbox" name="select" value="콜롬비아" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_CO.gif">콜롬비아</label>
+                        <label><input type="checkbox" name="select" value="유라시아" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_EA.gif">유라시아</label>
+                        <label><input type="checkbox" name="select" value="세르비아" checked><div class="custom-checkbox"></div><img src="/img/flag/icon_RS.gif">세르비아</label>
                     </div>
                 </div>
                 <button class="color-border-button" id="apply-filter" onclick="search()">적용</button>
             </div>
         </div>
         <div class="card-container">
+            <div id="container-top">
+                <div></div>
+                <select>
+                    <option>정확도순</option>
+                    <option>최신순</option>
+                    <option>오래된순</option>
+                </select>
+            </div>
             <div id="pagenation">
             </div>
         </div>
@@ -763,7 +859,7 @@
         if (st > lastScrollTop && st > navbarHeight) {
             // Scroll Down
             $(".navigation-bar").removeClass('scroll-up').addClass('scroll-down');
-        } else {
+        }else {
             // Scroll Up
             if (st + $(window).height() < $(document).height()) {
                 $('.navigation-bar').removeClass('scroll-down').addClass('scroll-up');
@@ -780,7 +876,7 @@
                     $(this).fadeIn(10);
                 })
             }
-        } else {
+        }else {
             // 아래쪽
             $("#search-input").css("box-shadow", "none");
             // $(".navigation-bar").prepend($("#search-area"));
