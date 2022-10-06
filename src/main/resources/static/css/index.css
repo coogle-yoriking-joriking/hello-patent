@@ -185,6 +185,8 @@ input:checked + .custom-checkbox  {
 	background-color: white;
 	border-radius: 10px;
 	box-shadow: 0 0 20px 0 darkslategrey;
+	
+    text-align: center;
 }
 .modal-card > div {
 	width: 100%;
@@ -200,53 +202,17 @@ input:checked + .custom-checkbox  {
 .code-img:hover {
 	opacity: 1;
 }
-
 .code-title-txt {
 	color: gray;
 	font-size: 0.8rem;
 	font-weight: bold;
 }
 
-.id-password textarea {
-	resize: none;
-	box-sizing: border-box;
-	padding: 20px 10px 0 10px;
-	border: none;
-	border-bottom: 1px solid;
-	width: 70%;
-	height: 50px;
-	margin-bottom: 10px;
-	font-size: 1rem;
-	font-family: Georgia, "맑은 고딕", serif;
+.info-num {
+	margin-top: 40px;
+	border-top: 1px solid #dfe1e5;
 }
 
-.id-password textarea:focus {
-	outline: none;
-}
-
-.button-position {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.button-position button {
-	width: 70%;
-	height: 50px;
-	margin-bottom: 10px;
-	font-size: 1rem;
-	border: 1px solid #cdcdcd;
-	box-shadow: 0 3px 5px 0 #cdcdcd;
-	border-radius: 10px;
-}
-
-#double-check {
-	position: absolute;
-	right: 60px;
-	margin-top: 13px;
-	padding: 5px;
-}
 
 /* 검색창 */
 .search-bar {
@@ -314,4 +280,81 @@ input:checked + .custom-checkbox  {
 
 .search-button:hover {
 	cursor: pointer;
+}
+
+
+
+
+/* 키프리스 용어설명 */
+table {
+    border-collapse: collapse;
+    font-family: "NanumBarunGothic", "돋움", dotum, Gulim, Tahoma, Verdana, AppleGothic, UnDotum, sans-serif;
+    width: 100%;
+}
+table p {
+	margin: 0;
+}
+thead tr img {
+    /* margin: 10px 40px 15px 40px; */
+    margin: 15px 3%;
+}
+.number_info_main {
+    border-top: 3px solid #c8d2d9;
+    border-bottom: 3px solid #c8d2d9;
+    font-size: 0.91rem;
+}
+.number_info_title {
+    width: 9%;
+    /* font-size: 1.3rem; */
+    color: #fff;
+    background: rgb(141, 156, 171);
+    text-align: center;
+    border-bottom: 1px solid #9caab7;
+}
+.number_info_explain {
+    background: #e9eef3;
+    padding: 7px;
+    width: 60%;
+    height: 100%;
+    border-bottom: 1px solid #c9d0d6;
+    line-height: 1.5;
+}
+.number_info_explain img {
+    float: left;
+    margin: 0 6px;
+    margin-top: 3px;
+}
+.number_info_bottom_02 {
+    border-bottom: 1px solid #9caab7;
+	font-size: 0.73rem;
+}
+.number_info_sub {
+    /* font-size: 1rem; */
+    text-align: center;
+}
+.number_info_sub tr:last-child td:last-child {
+    padding-bottom: 10px;
+    padding-top: 3px;
+}
+.number_info_explain_02 {
+    background: rgba(233, 238, 243, 0.42);
+    padding: 5px 0 5px 24px;
+    line-height: 1.5;
+    font-size: 0.75rem;
+    border-bottom: 1px solid #c9d0d6;
+}
+.number_info_bottom_01 {
+    border-bottom: 2px solid #9caab7;
+}
+.number_info_example td:last-child {
+    padding-right: 10px;
+}
+.number_info_example td:first-child {
+    padding-left: 10px;
+}
+.number_info_example td {
+    padding-top: 10px;
+}
+.info_gray {
+    color: #848484;
 }

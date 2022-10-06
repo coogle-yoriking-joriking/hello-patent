@@ -328,7 +328,6 @@
             $("#container-top").children("div").remove();
             $("#container-top").css("display", "none")
             $("#pagenation").css("display", "none")
-            $("#pagenation").before('<h2 style="text-align: center;">검색어를 입력해주세요 😃</h2>');
             $("#container-top > select > option:contains('정확도순')").prop("selected", true);
 
             $(this).removeClass("color-border-button").addClass("dark-color-button");
@@ -339,14 +338,15 @@
             exceptValue = [];
             $("input[type=checkbox]").prop("checked", true);
             if ($(this).attr("id") == "korean") {
+                $("#pagenation").before('<h2 style="text-align: center;">국내 특허·실용신안 검색입니다</h2>');
                 $(".korean").css("display", "");
                 $(".foreign").css("display", "none");
             }
             else {
+                $("#pagenation").before('<h2 style="text-align: center;">해외 특허 검색입니다</h2>');
                 $(".foreign").css("display", "");
                 $(".korean").css("display", "none");
             }
-            $()
         }
     })
 
@@ -361,7 +361,7 @@
             if (input_value !== "") {
                 $("#search-input").val(input_value);
                 search(input_value);
-            } else {
+            }else {
                 $("#search-input").val(input_value);
             }
         }
@@ -373,7 +373,7 @@
         if (input_value !== "") {
             $("#search-input").val(input_value);
             search(input_value);
-        } else {
+        }else {
             $("#search-input").val(input_value);
         }
     });
@@ -397,10 +397,10 @@
                 contentType = []; contentValue = []; exceptType = []; exceptValue = []; page = 1;
                 contentType.push($("#select-option").children("option:selected").attr("name"));
                 contentValue.push(input_value);
-            } else if ($("input[value='include-search']").is(":checked")) {
+            }else if ($("input[value='include-search']").is(":checked")) {
                 contentType.push($("#select-option").children("option:selected").attr("name"));
                 contentValue.push(input_value);
-            } else if ($("input[value='except-search']").is(":checked")) {
+            }else if ($("input[value='except-search']").is(":checked")) {
                 exceptType.push($("#select-option").children("option:selected").attr("name"));
                 exceptValue.push(input_value);
             }
@@ -421,6 +421,7 @@
 
     function koreanData() {
         // 특허/실용 구분
+        delete data.patentType;
         if ($("input[value='특허']").is(":checked") & !$("input[value='실용']").is(":checked")) { data.patentType = "특허" }
         if ($("input[value='실용']").is(":checked") & !$("input[value='특허']").is(":checked")) { data.patentType = "실용" }
 
@@ -437,7 +438,7 @@
                 }
             }
             data.statusType = statusType;
-        }
+        }else delete data.statusType;
         koreanSearch();
     }
     function foreignData() {
@@ -451,7 +452,7 @@
                 }
             }
             data.country = country;
-        } else delete data.country;
+        }else delete data.country;
         foreignSearch();
     }
 
@@ -474,7 +475,7 @@
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
                     let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
-										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
+										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}" onerror="this.src='/img/noimg.png'"></div>
 										<div class="card-content">
 											<div class="card-title">${title}</div>
 											<div class="card-app">
@@ -520,9 +521,14 @@
                     let country = card["국가"].split(",");
                     let ipc = (card["ipc분류"] != null) ? card["ipc분류"].split(",") : "IPC가 없습니다";
                     let summary = card["요약"] != null ? card["요약"] : "요약이 없습니다";
+
+                    let img = countryNum(card);
+                    
+                    let imgurl = (img == null) ? "/img/noimg.png" : `http://abpat.kipris.or.kr/abpat/remoteFile.do?method=bigFrontDraw&thumb=Y&publ_key=${img}`;
+
                     let temphtml = `<div class="card" id="${application_number}" onclick="window.open('http://kpat.kipris.or.kr/kpat/biblio/biblioMain_pdfAcrobat.jsp?method=fullText&applno=${application_number}',
 																									'window_name', 'width=500, height=750, location=no, status=no, scrollbars=yes');">
-										<div class="card-img"><img src="http://kpat.kipris.or.kr/kpat/remoteFile.do?method=bigFrontDraw&applno=${application_number}"></div>
+										<div class="card-img"><img src="${imgurl}" onerror="this.src='/img/noimg.png'"></div>
 										<div class="card-content">
                                             <div class="card-flag">
                                                 <img src="/img/flag/icon_${country[1]}.gif">
@@ -588,7 +594,7 @@
         let clickpage = $(this).text();
         if (!isNaN(clickpage * 1)) {
             data.page = clickpage * 1;
-        } else {
+        }else {
             let tempPage;
             let tempFirst = firstPage;
             switch (clickpage) {
@@ -620,14 +626,32 @@
         else foreignSearch();
     })
 
-    function foreignImage(country) {
-        switch(country) {
+    function countryNum(card) {
+        const country = card["국가"].split(",")[1];
+        switch(country) {  
             case "CN":
-
-                break;
-        
+                if(card["등록번호"] == null && card["공개번호"] != null) return `CN${card["출원번호"]}A0&cntry=CN`;
+                else if(card["등록번호"] == null && card["공개번호"] == null) return `CN${card["출원번호"]}Y0&cntry=CN`;
+                else if(card["공개번호"] == null) {
+                    if(card["출원일자"].replace(/./g, "") < 20100000) return `CN${card["출원번호"]}Y0&cntry=CN`;
+                    else return `CN${card["출원번호"]}U0&cntry=CN`;
+                }else return `CN${card["출원번호"]}C0&cntry=CN`;
+            case "JP":
+                if(card["등록번호"] == null || card["공개번호"] == null) return null;
+                return `JP0000${card["등록번호"]}B2&cntry=JP`;
+            case "WO":
+                let num = card["공개번호"];
+                return `WO${num.slice(0, 4)}00${num.slice(-6, 10)}A1&cntry=WO`;
+            case "US":
+                if(card["등록번호"] == null && card["공개번호"] != null) return `US0000${card["공개번호"]}A1&cntry=US`;
+                else if(card["등록번호"] != null && card["공개번호"] == null) return `US0000${card["등록번호"]}B1&cntry=US`;
+                else if(card["등록번호"] == null && card["공개번호"] == null) return `US0000${card["출원번호"]}A1&cntry=US`;
+                else return `US0000${card["등록번호"]}B2&cntry=US`;
+            case "EP":
+                if(card["등록번호"] == null) return `US0000${card["공보번호"]}A1&cntry=US`;
+                else return `US0000${card["공보번호"]}B1&cntry=US`;
             default:
-                break;
+                return null;
         }
     }
 
@@ -651,7 +675,7 @@
     </nav>
     <div style="background-color: #82c5f1;">
         <div style="height: 70px;"></div>
-        <div class="search-bar" style="margin-top: 10%;">
+        <div class="search-bar" style="margin-top: 7%;">
             <img id="big-logo" src="/img/hellopatent_biglogo.png" style="width: 300px; margin-bottom: 50px;">
             <div id="search-tab" style="width: 760px; margin-bottom: 10px;">
                 <button class="dark-color-button" id="korean"
@@ -742,6 +766,7 @@
         </div>
         <div class="card-container">
             <div id="container-top">
+                <div></div>
                 <select>
                     <option>정확도순</option>
                     <option>최신순</option>
@@ -834,7 +859,7 @@
         if (st > lastScrollTop && st > navbarHeight) {
             // Scroll Down
             $(".navigation-bar").removeClass('scroll-up').addClass('scroll-down');
-        } else {
+        }else {
             // Scroll Up
             if (st + $(window).height() < $(document).height()) {
                 $('.navigation-bar').removeClass('scroll-down').addClass('scroll-up');
@@ -851,7 +876,7 @@
                     $(this).fadeIn(10);
                 })
             }
-        } else {
+        }else {
             // 아래쪽
             $("#search-input").css("box-shadow", "none");
             // $(".navigation-bar").prepend($("#search-area"));
