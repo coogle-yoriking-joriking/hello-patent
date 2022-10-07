@@ -1,27 +1,27 @@
 html,
 body,
 div {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 body {
-	width: 100vw;
-	height: 100vh;
-	overflow: overlay;
+    width: 100vw;
+    height: 100vh;
+    overflow: overlay;
 }
 button:hover {
-	cursor: pointer;
+    cursor: pointer;
 }
 ::selection {
-	background-color: #00000010;
+    background-color: #00000010;
 }
 ul {
-	list-style: none;
-	padding-left: 0px;
+    list-style: none;
+    padding-left: 0px;
 }
 em {
-	background-color: #ffffaf;
-	font-style: normal;
+    background-color: #ffffaf;
+    font-style: normal;
 }
 
 /* 스크롤바 */
@@ -30,11 +30,11 @@ em {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: gray;
+    background: gray;
     
     border-radius: 10px;
-	background-clip: padding-box;
-	border: 3px solid transparent;
+    background-clip: padding-box;
+    border: 3px solid transparent;
 }
 
 ::-webkit-scrollbar-track {
@@ -43,243 +43,274 @@ em {
 
 /* 버튼 */
 .color-button {
-	background-color: #afdcf9;
-	border: 1px solid #82c5f1;
+    background-color: #afdcf9;
+    border: 1px solid #82c5f1;
 }
 .color-button:hover {
-	background-color: #82c5f1;
+    background-color: #82c5f1;
 }
 
 .dark-color-button {
-	background-color: #3995d0;
-	border: 1px solid #82c5f1;
-	color: white;
+    background-color: #3995d0;
+    border: 1px solid #82c5f1;
+    color: white;
 }
 .dark-color-button:hover {
-	background-color: #5bafe5;
+    background-color: #5bafe5;
 }
 
 .color-border-button {
-	background: #ffffff2a;
-	border: 1px solid #3995d0;
-	color: #3995d0;
+    background: #ffffff2a;
+    border: 1px solid #3995d0;
+    color: #3995d0;
 }
 .color-border-button:hover {
-	background-color: #00000010;
+    background-color: #00000010;
 }
 
 .white-button {
-	background-color: white;
+    background-color: white;
 }
 .white-button:hover {
-	background-color: #00000010;
+    background-color: #00000010;
 }
 
 /* 체크박스 */
 input[type=checkbox] {
-	display: none;
+    display: none;
 }
 .custom-checkbox {
-	width: 12px;
-	height: 12px;
-	border: 1px solid #dddddd;
-	border-radius: 2px;
-	margin: 3px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+    margin: 3px;
 }
 input:checked + .custom-checkbox  {
-	border: 1px solid white;
-	background: url("https://cdn-icons-png.flaticon.com/512/17/17153.png") no-repeat center / contain;
+    border: 1px solid white;
+    background: url("https://cdn-icons-png.flaticon.com/512/17/17153.png") no-repeat center / contain;
 }
 /* 툴팁 */
 .tooltip {
-	display: inline-block;
+    display: inline-block;
 }
 .tooltip-text {
-	display: none;
-	position: absolute;
+    display: none;
+    position: absolute;
 
-	max-width: 500px;
-	padding: 5px;
-	margin-top: 5px;
+    max-width: 500px;
+    padding: 5px;
+    margin-top: 5px;
 
-	background: white;
-	border: 1px solid #dddddd;
-	border-radius: 5px;
+    background: white;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
 
-	font-size: 0.8em;
-	color: gray;
+    font-size: 0.8em;
+    color: gray;
 }
 .tooltip:hover .tooltip-text {
-	display: block;
+    display: block;
 }
 
 /* 상단바 */
 .navigation-bar {
-	position: fixed;
-	top: 0;
-	z-index: 10;
+    position: fixed;
+    top: 0;
+    z-index: 10;
 
-	display: grid;
-	grid-template-columns: 1fr 10fr 1fr;
-	align-items: center;
-	justify-items: center;
+    display: grid;
+    grid-template-columns: 1fr 10fr 1fr;
+    align-items: center;
+    justify-items: center;
 
-	width: 100%;
-	height: 70px;
+    width: 100%;
+    height: 70px;
 
-	background-color: #82c5f1;
-	transition: top 0.2s ease-in-out;
+    background-color: #82c5f1;
+    transition: top 0.2s ease-in-out;
 }
 
 .scroll-down {
-	top: -70px;
+    top: -70px;
 }
 
-#login-button {
-	grid-column: 3/4;
-
-	width: 100px;
-	height: 40px;
-	font-size: 1rem;
+#loading-effect1 {
+    animation: loading1 2s cubic-bezier(0.8, 0, 0.5, 1) infinite;
+    transform-origin : bottom right;
+}
+@keyframes loading1 {
+    0% {
+        transform: rotate(90deg);
+    }
+    20% {
+        transform: rotate(0deg);
+    }
+    80% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(90deg);
+    }
+}
+#loading-effect2 {
+    animation: loading2 2s cubic-bezier(0.8, 0, 0.5, 1) infinite;
+}
+@keyframes loading2 {
+    0% {
+        transform: rotateY(90deg);
+    }
+    50% {
+        transform: rotateY(90deg);
+    }
+    70% {
+        transform: rotateY(0deg);
+    }
+    80% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(90deg);
+    }
 }
 
 /* 모달창 */
 .modal-background {
-	position: fixed;
-	background-color: #00000040;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
+    position: fixed;
+    background-color: #00000040;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .modal {
-	display: none;
-	justify-content: center;
-	align-items: center;
-	position: fixed;
-	width: 100vw;
-	height: 100vh;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 .modal.on {
-	display: flex;
-	z-index: 30;
+    display: flex;
+    z-index: 30;
 }
 
 .modal-card {
     overflow-y: auto;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-	width: 900px;
-	max-height: calc(100vh - 210px);
-	padding: 50px;
+    width: 900px;
+    max-height: calc(100vh - 210px);
+    padding: 50px;
 
-	background-color: white;
-	border-radius: 10px;
-	box-shadow: 0 0 20px 0 darkslategrey;
-	
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px 0 darkslategrey;
+    
     text-align: center;
 }
 .modal-card > div {
-	width: 100%;
+    width: 100%;
 }
 
 .info-ipc li {
-	margin-right: 5px;
+    margin-right: 5px;
 }
 .code-img {
-	width: 100px;
-	opacity: 0.3;
+    width: 100px;
+    opacity: 0.3;
 }
 .code-img:hover {
-	opacity: 1;
+    opacity: 1;
 }
 .code-title-txt {
-	color: gray;
-	font-size: 0.8rem;
-	font-weight: bold;
+    color: gray;
+    font-size: 0.8rem;
+    font-weight: bold;
 }
 
 .info-num {
-	margin-top: 40px;
-	border-top: 1px solid #dfe1e5;
+    margin-top: 40px;
+    border-top: 1px solid #dfe1e5;
 }
 
 
 /* 검색창 */
 .search-bar {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 
-	height: 25vh;
+    height: 25vh;
 }
 
 #search-area {
-	grid-column: 2/3;
+    grid-column: 2/3;
 
 }
 
 #select-option {
-	position: absolute;
-	width: 140px;
-	height: 62px;
-	padding: 0 0 0 15px;
+    position: absolute;
+    width: 140px;
+    height: 62px;
+    padding: 0 0 0 15px;
 
-	background-color: transparent;
-	border: none;
-	color: #3995d0;
-	font-size: 1rem;
-	font-weight: bold;
+    background-color: transparent;
+    border: none;
+    color: #3995d0;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 #select-option {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 #select-option:focus-visible {
-	outline: none;
+    outline: none;
 }
 
 #search-input {
-	width: 600px;
-	height: 60px;
-	padding: 0 50px 0 145px;
+    width: 600px;
+    height: 60px;
+    padding: 0 50px 0 145px;
 
-	border: 1px solid #cdcdcd;
-	border-radius: 30px;
-	box-shadow: 5px 10px 5px 0 #3995d0;
-	font-size: 1rem;
+    border: 1px solid #cdcdcd;
+    border-radius: 30px;
+    box-shadow: 5px 10px 5px 0 #3995d0;
+    font-size: 1rem;
 }
 
 #search-input:focus {
-	outline: none;
+    outline: none;
 }
 
 .search-button {
-	position: absolute;
-	margin: 0 0 0 -60px;
-	width: 60px;
-	height: 62px;
+    position: absolute;
+    margin: 0 0 0 -60px;
+    width: 60px;
+    height: 62px;
 
-	background: center center url("https://cdn-icons-png.flaticon.com/512/61/61088.png");
-	background-repeat: no-repeat;
-	background-size: 20px;
+    background: center center url("https://cdn-icons-png.flaticon.com/512/61/61088.png");
+    background-repeat: no-repeat;
+    background-size: 20px;
 
-	border: none;
+    border: none;
 }
 
 .search-button:hover {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 
@@ -292,7 +323,7 @@ table {
     width: 100%;
 }
 table p {
-	margin: 0;
+    margin: 0;
 }
 thead tr img {
     /* margin: 10px 40px 15px 40px; */
@@ -326,7 +357,7 @@ thead tr img {
 }
 .number_info_bottom_02 {
     border-bottom: 1px solid #9caab7;
-	font-size: 0.73rem;
+    font-size: 0.73rem;
 }
 .number_info_sub {
     /* font-size: 1rem; */
