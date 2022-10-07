@@ -17,9 +17,15 @@
 </div>
 
 <!-- 로딩창 -->
-<div class="modal on" th:fragment="loadingFragment">
-    <div class="modal-background"></div>
-    <img src="https://t1.daumcdn.net/cfile/blog/9971254B5E3A670916" style="width: 50px;">
+<div class="modal" id="loading" th:fragment="loading3Fragment">
+    <div class="modal-background" style="background-color: #00000030;"></div>
+    <div style="position: absolute; background-color: #afdbf9ea; border-radius: 50%; width: 130px; height: 130px; display: flex; justify-content: center; align-items: center;">
+        <img src="/img/loading2-1.png" style="position: absolute; height: 70px;">
+        <div style="overflow: hidden; width: 39px; height: 70px; margin-right: 49px;">
+            <img id="loading-effect1" src="/img/loading1-1.png" style="height: 70px;">
+        </div>
+        <img id="loading-effect2" src="/img/loading1-2.png" style="position: absolute; height: 70px;">
+    </div>
 </div>
 
 <!-- 용어 설명 모달창 -->

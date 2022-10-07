@@ -362,7 +362,7 @@
             var input_value = $(this).val().replace(/\s+/g, ' ').trim(); // 값 가져오기
 
             // 값이 없으면 넘어가기
-            if (input_value !== "") {
+            if (input_value != "") {
                 $("#search-input").val(input_value);
                 search(input_value);
             }else {
@@ -374,7 +374,7 @@
         var input_value = $("#search-input").val().replace(/\s+/g, ' ').trim(); // 값 가져오기
 
         // 값이 없으면 넘어가기
-        if (input_value !== "") {
+        if (input_value != "") {
             $("#search-input").val(input_value);
             search(input_value);
         }else {
@@ -418,10 +418,21 @@
             data.contentValue = contentValue,
             data.exceptType = exceptType,
             data.exceptValue = exceptValue
+
         if ($("#korean").hasClass("dark-color-button")) koreanData();
         else foreignData();
 
     }
+
+    // 정렬 기능
+    $(document).on("change", "#container-top > select", function () {
+        let sort = $("#container-top > select").children("option:selected").text();
+        if(sort == "정확도순") delete data.sortType
+        else data.sortType = sort;
+        data.page = 1;
+        if ($("#korean").hasClass("dark-color-button")) koreanSearch();
+        else foreignSearch();
+    });
 
     function koreanData() {
         // 특허/실용 구분
@@ -461,12 +472,15 @@
     }
 
     function koreanSearch() {
+        $("#loading").addClass("on");
+        let start_time = new Date().getTime();
         $.ajax({
             type: "GET",
             url: "/patent/korean",
             data: data,
             success: function (response) {
-                commonResponse(response.totalhits);
+                let duration =  new Date().getTime() - start_time;
+                commonResponse(response.totalhits, duration);
                 let patent = response.patentres;
                 for (let i = 0; i < patent.length; i++) {
                     let card = patent[i];
@@ -506,16 +520,22 @@
                 totalPage = response.pagecount;
                 $("#pagenation").empty();
                 pageBar();
+            },
+            error: function() {
+                errorResponse();
             }
         });
     }
     function foreignSearch() {
+        $("#loading").addClass("on");
+        let start_time = new Date().getTime();
         $.ajax({
             type: "GET",
             url: "/patent/foreign",
             data: data,
             success: function (response) {
-                commonResponse(response.totalhits);
+                let duration =  new Date().getTime() - start_time;
+                commonResponse(response.totalhits, duration);
                 let patent = response.patentres;
                 for (let i = 0; i < patent.length; i++) {
                     let card = patent[i];
@@ -563,12 +583,16 @@
                 totalPage = response.pagecount;
                 $("#pagenation").empty();
                 pageBar();
+            },
+            error: function() {
+                errorResponse();
             }
         });
     }
 
-    function commonResponse(totalhits) {
+    function commonResponse(totalhits, duration) {
         $(".card-container").children().not("#pagenation, #container-top").remove();
+        $("#loading").removeClass("on");
         if (totalhits == 0) {
             $("#container-top").css("display", "none")
             $("#pagenation").css("display", "none")
@@ -578,7 +602,7 @@
         $("#pagenation").css("display", "")
         $("#container-top").children("div").remove();
         $("#container-top").css("display", "")
-        $("#container-top").prepend(`<div style="color: gray; padding-top: 6px;">검색결과: ${Number(totalhits).toLocaleString("en-US")}건</div>`);
+        $("#container-top").prepend(`<div style="color: gray; padding-top: 6px;">검색결과: ${Number(totalhits).toLocaleString("en-US")}건, 약 ${duration}ms</div>`);
     }
 
     function pageBar() {
@@ -660,20 +684,18 @@
         }
     }
 
-    // 정렬 기능
-    $(document).on("change", "#container-top > select", function () {
-        let sort = $("#container-top > select").children("option:selected").text();
-        if(sort == "정확도순") delete data.sortType
-        else data.sortType = sort;
-        data.page = 1;
-        if ($("#korean").hasClass("dark-color-button")) koreanSearch();
-        else foreignSearch();
-    });
+    function errorResponse() {
+        $("#loading").removeClass("on");
+        $("#container-top").css("display", "none")
+        $("#pagenation").css("display", "none")
+        alert("문제가 발생했습니다. 다시 시도해주세요");
+        window.location.reload();
+    }
 </script>
 
 <body style="background-color: #82c5f1;">
     <div th:replace="fragments/index.html :: infoModalFragment"></div>
-    <!-- <div th:replace="fragments/index.html :: loadingFragment"></div> -->
+    <div th:replace="fragments/index.html :: loading3Fragment"></div>
     <nav class="navigation-bar scroll-up">
         <div id="logo" style="cursor: pointer; display: none; height: 65px;" onclick="window.location.reload()">
             <img src="/img/hellopatent_logo.png" style="height: 70px;">
