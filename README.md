@@ -29,7 +29,9 @@
 
 ## 📽 시연 영상
   
-[HELLO-PATENT Demonstration Video]()
+### 👉 [안녕, 특허 시연 영상](https://www.youtube.com/watch?v=E6LSRgEePyg) 보러가기 
+(자막과 함꼐 시청해 주세요🔛)
+
 
 
 ## ⚡트러블 슈팅
