@@ -12,8 +12,8 @@
 
 
 ## 📋 서비스 아키텍쳐
+<img width="642" alt="안녕, 특허 아키텍쳐" src="https://user-images.githubusercontent.com/107941880/201466846-d3a6b883-1c47-4e43-adaf-f4812a85d993.png">
 
-![image](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/574b205e-da8c-44bd-8c9f-1dd9f218da25/%EC%95%88%EB%85%95_%ED%8A%B9%ED%97%88_%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221005T110856Z&X-Amz-Expires=86400&X-Amz-Signature=af110e47434207c1fb210436b254a9586d158be114878f587a5ea3ab0fe88eaf&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22%25EC%2595%2588%25EB%2585%2595%252C%2520%25ED%258A%25B9%25ED%2597%2588%2520%25EC%2595%2584%25ED%2582%25A4%25ED%2585%258D%25EC%25B3%2590.png%22&x-id=GetObject)
 
 ## 🚀 기술 스택
  <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=SpringBoot&logoColor=white"/> <img src="https://img.shields.io/badge/Java-007396?style=flat&logo=java&logoColor=white"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=Gradle&logoColor=white"/> <img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat&logo=AmazonEC2&logoColor=white"/> <img src="https://img.shields.io/badge/Elasticsearch-005571?style=flat&logo=Elasticsearch&logoColor=white"/>
